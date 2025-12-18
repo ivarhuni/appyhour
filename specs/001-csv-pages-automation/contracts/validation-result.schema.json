@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ivarhuni.github.io/happyhour/schemas/validation-result.json",
+  "title": "ValidationResult",
+  "description": "Result of CSV validation including any errors found",
+  "type": "object",
+  "required": ["generated_at", "valid", "error_count", "valid_row_count", "errors"],
+  "properties": {
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO8601 timestamp of when validation was performed"
+    },
+    "valid": {
+      "type": "boolean",
+      "description": "True if no validation errors were found"
+    },
+    "error_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of validation errors"
+    },
+    "valid_row_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of valid bar rows"
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "$ref": "validation-error.schema.json"
+      },
+      "description": "Array of all validation errors found"
+    }
+  },
+  "additionalProperties": false
+}

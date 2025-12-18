@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ivarhuni.github.io/happyhour/schemas/bars-collection.json",
+  "title": "BarsCollection",
+  "description": "Collection of all validated bars",
+  "type": "object",
+  "required": ["generated_at", "count", "bars"],
+  "properties": {
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO8601 timestamp of when the collection was generated"
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of bars in the collection"
+    },
+    "bars": {
+      "type": "array",
+      "items": {
+        "$ref": "bar.schema.json"
+      },
+      "description": "Array of all validated bar records"
+    }
+  },
+  "additionalProperties": false
+}
