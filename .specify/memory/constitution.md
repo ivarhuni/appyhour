@@ -14,10 +14,10 @@ This repository is a **data-first, static publishing pipeline**: contributors ed
 - Every failure must be explainable via `/errors` (human) and `/errors/errors.json` (machine), without reading Action logs.
 - If rules change, update contributor-facing docs (`README.md`) in the same change.
 
-### III. Stable Data Contract for Clients
+### III. Data Contract for Clients
 - `/data/bars.json` and `/data/bars/<slug>.json` are treated as **public API**.
-- Prefer additive changes (new optional fields) over breaking changes.
-- Any breaking change requires: versioning strategy, migration plan, and a deprecation window (see Governance).
+- Still under development and csv format / json format has not been formally established
+- For now foucsed on getting an example csv and json online
 
 ### IV. Deterministic Builds & Repeatability
 - Running the generator twice on the same `bars.csv` must produce identical outputs (ignoring timestamps that are explicitly documented).
@@ -36,21 +36,22 @@ This repository is a **data-first, static publishing pipeline**: contributors ed
 
 ### Tech/Hosting Constraints
 - **Hosting**: GitHub Pages deployed from GitHub Actions to `gh-pages`.
-- **Input**: `bars.csv` at repo root.
+- **Input**: `/webservice/bars.csv` (single source of truth).
 - **Outputs** (in published site root):
   - `/data/bars.json`
-  - `/data/bars/<slug>.json`
+  - `/data/bars/{n}.json` (where n = CSV row number - 3, starting from 1)
   - `/errors/index.html`
   - `/errors/errors.json`
 
 ### Data & Validation Standards
 - **Headers**: column names are canonical; renames are breaking changes.
 - **Required fields**: must be present and non-empty (as documented in `README.md`).
-- **Contact**: must be a valid email or a valid URL.
-- **Coordinates** (if provided): must be valid numbers and within real ranges (lat \(-90..90\), lng \(-180..180\)).
-- **Prices** (if provided): must be integers and non-negative (or strictly positive if the project decides so—document the choice).
-- **Booleans** (if provided): accept a documented set (e.g., `Yes/No`, `true/false`) and normalize to JSON boolean.
-- **Slug**: derived deterministically from name (or a dedicated column, if later introduced). Slugs must be unique and URL-safe.
+- **Contact**: must be a valid email format.
+- **Coordinates**: required, must be valid numbers within ranges (lat \(-90..90\), lng \(-180..180\)).
+- **Prices**: must be integers and non-negative.
+- **Booleans**: accept `Yes/No` and normalize to JSON boolean.
+- **Happy Hour Times**: must follow format "HH:MM - HH:MM" (24-hour).
+- **Bar ID**: derived from CSV row number (row - 3), sequential starting from 1. No slug required.
 - **Partial validity**: if any blocking error exists, consider the dataset invalid (workflow fails) but still publish errors.
 
 ### Security & Privacy
@@ -83,6 +84,10 @@ This repository is a **data-first, static publishing pipeline**: contributors ed
   - the exact CSV columns and accepted formats
   - where to find `/errors` and how to interpret them
 - Error codes (if used) must be documented and stable.
+
+### Folder structure
+/webservice folder will contain all csv / json hosted related files&folders
+In the future, an /app folder will contain a flutter app that will consume the json
 
 ## Governance
 - This constitution supersedes other docs when there is conflict.

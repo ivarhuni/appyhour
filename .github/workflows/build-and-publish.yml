@@ -1,0 +1,72 @@
+name: Build and Publish Happy Hour Data
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: webservice/package-lock.json
+
+      - name: Install dependencies
+        working-directory: webservice
+        run: npm ci
+
+      - name: Build TypeScript
+        working-directory: webservice
+        run: npx tsc
+
+      - name: Validate CSV
+        id: validate
+        working-directory: webservice
+        continue-on-error: true
+        run: node dist/index.js validate
+
+      - name: Generate outputs
+        working-directory: webservice
+        run: node dist/index.js generate
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: webservice/public
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Fail if validation had errors
+        if: steps.validate.outcome == 'failure'
+        run: |
+          echo "❌ Validation failed but errors have been published to /errors/"
+          echo "View errors at: ${{ steps.deployment.outputs.page_url }}errors/"
+          exit 1

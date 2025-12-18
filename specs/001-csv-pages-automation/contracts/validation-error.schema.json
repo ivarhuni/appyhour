@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ivarhuni.github.io/happyhour/schemas/validation-error.json",
+  "title": "ValidationError",
+  "description": "A single validation error found in the CSV",
+  "type": "object",
+  "required": ["line", "code", "message"],
+  "properties": {
+    "line": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "1-based line number in the CSV file where the error occurred"
+    },
+    "field": {
+      "type": ["string", "null"],
+      "description": "Column name if the error is field-specific, null for row-level errors"
+    },
+    "code": {
+      "type": "string",
+      "enum": [
+        "MISSING_HEADER",
+        "MISSING_REQUIRED",
+        "INVALID_EMAIL",
+        "INVALID_COORDINATE",
+        "INVALID_PRICE",
+        "INVALID_BOOLEAN",
+        "MALFORMED_ROW",
+        "PARSE_ERROR"
+      ],
+      "description": "Stable error code for programmatic handling"
+    },
+    "message": {
+      "type": "string",
+      "description": "Human-readable error description"
+    },
+    "value": {
+      "type": ["string", "null"],
+      "description": "The problematic value that caused the error (for debugging)"
+    }
+  },
+  "additionalProperties": false
+}
