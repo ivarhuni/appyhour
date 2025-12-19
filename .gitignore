@@ -3,6 +3,8 @@ node_modules/
 
 # Generated output (deployed via GitHub Actions)
 public/
+webservice/public/
+webservice/dist/
 
 # Build artifacts
 dist/

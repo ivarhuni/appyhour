@@ -1,0 +1,89 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ivarhuni.github.io/happyhour/schemas/bar.json",
+  "title": "Bar",
+  "description": "A single establishment's happy hour information",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "email",
+    "street",
+    "latitude",
+    "longitude",
+    "happy_hour_days",
+    "happy_hour_times",
+    "cheapest_beer_price",
+    "cheapest_wine_price",
+    "two_for_one",
+    "notes"
+  ],
+  "properties": {
+    "id": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Sequential identifier (CSV row number - 3)"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Name of the bar or restaurant"
+    },
+    "email": {
+      "type": "string",
+      "format": "email",
+      "description": "Best contact email for the establishment"
+    },
+    "street": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Street address"
+    },
+    "latitude": {
+      "type": "number",
+      "minimum": -90,
+      "maximum": 90,
+      "description": "Geographic latitude coordinate (required)"
+    },
+    "longitude": {
+      "type": "number",
+      "minimum": -180,
+      "maximum": 180,
+      "description": "Geographic longitude coordinate"
+    },
+    "happy_hour_days": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Days when happy hour is available (e.g., 'Every day', 'Mon-Fri')"
+    },
+    "happy_hour_times": {
+      "type": "string",
+      "pattern": "^\\d{2}:\\d{2}\\s*-\\s*\\d{2}:\\d{2}$",
+      "description": "Time range for happy hour in HH:MM - HH:MM format (24-hour)"
+    },
+    "cheapest_beer_price": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Price of cheapest beer in ISK"
+    },
+    "cheapest_wine_price": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Price of cheapest wine in ISK"
+    },
+    "two_for_one": {
+      "type": "boolean",
+      "description": "Whether 2-for-1 deals are available"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes about the happy hour"
+    },
+    "description": {
+      "type": ["string", "null"],
+      "description": "Optional description for featured happy hour"
+    }
+  },
+  "additionalProperties": false
+}
