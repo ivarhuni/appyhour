@@ -27,7 +27,7 @@ You can also consult with [GitHub Copilot](https://github.com/copilot) (Copilot 
 5. Merge the PR
   - If GitHub reports a merge conflict, resolve it by selecting the option that keeps **your new `bars.csv`** (often shown as “incoming changes”), then mark as resolved and complete the merge.
 6. Watch the workflow run on merges to `main`:
-  - https://github.com/ivarhuni/appyhour (Actions tab)
+  - https://github.com/ivarhuni/appyhour/actions
 
 The system will automatically validate and publish after a successful merge to `main`.
 
