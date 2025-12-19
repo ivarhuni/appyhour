@@ -18,6 +18,7 @@ A CSV-based system for managing Reykjavik happy hour data. Contributors edit CSV
 ### Non-programmer guide: updating the data
 
 Use this flow when you want to replace the dataset (for example, when you have a fresh export).
+You can also consult with [GitHub Copilot](https://github.com/copilot) (Copilot Chat is in the top-right on GitHub) if this readme isn’t comprehensive enough.
 
 1. Create a new branch in the github web-ui
 2. Delete the current [`webservice/bars.csv`](webservice/bars.csv)
