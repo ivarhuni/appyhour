@@ -15,13 +15,43 @@ A CSV-based system for managing Reykjavik happy hour data. Contributors edit CSV
 
 ## 📝 How to Contribute
 
-### Adding or Editing Bar Data
+### Non-programmer guide: updating the data
 
-1. Navigate to [`webservice/bars.csv`](webservice/bars.csv) on GitHub
-2. Click the **pencil icon** (Edit this file)
-3. Make your changes following the format below
-4. Commit directly to `main` branch
-5. The system will automatically validate and publish
+Use this flow when you want to replace the dataset (for example, when you have a fresh export).
+
+1. Create a new branch in the github web-ui
+2. Delete the current [`webservice/bars.csv`](webservice/bars.csv)
+3. Add your new `bars.csv` in the same location (`webservice/bars.csv`)
+4. Open a Pull Request (PR)
+5. Merge the PR
+  - If GitHub reports a merge conflict, resolve it by selecting the option that keeps **your new `bars.csv`** (often shown as “incoming changes”), then mark as resolved and complete the merge.
+6. Watch the workflow run on merges to `main`:
+  - https://github.com/ivarhuni/appyhour (Actions tab)
+
+The system will automatically validate and publish after a successful merge to `main`.
+
+### Programmer update guide (CLI)
+
+```bash
+# from repo root
+git checkout -b chore/update-bars
+
+# replace the CSV
+$EDITOR webservice/bars.csv
+
+# optional: validate locally
+cd webservice
+npm ci
+npm test
+
+# commit + push
+cd ..
+git add webservice/bars.csv
+git commit -m "Update bars.csv"
+git push -u origin chore/update-bars
+```
+
+Open a PR, make sure CI is green, then merge. If there’s a merge conflict, resolve `webservice/bars.csv` so it matches the version you intend to publish.
 
 ### CSV Format
 
