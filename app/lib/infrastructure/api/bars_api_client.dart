@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 /// HTTP client for fetching bars data from GitHub Pages.
 class BarsApiClient {
-  static const String _baseUrl = 'https://ivarhuni.github.io/happyhour';
+  static const String _baseUrl = 'https://ivarhuni.github.io/appyhour';
   static const String _barsEndpoint = '/data/bars.json';
 
   final http.Client _httpClient;
