@@ -1,6 +1,6 @@
-import 'package:happyhour_app/domain/entities/bar.dart';
-import 'package:happyhour_app/domain/value_objects/happy_hour_days.dart';
-import 'package:happyhour_app/domain/value_objects/happy_hour_time.dart';
+import 'package:happyhour_app/domain/bars/entities/bar.dart';
+import 'package:happyhour_app/domain/bars/models/happy_hour_days.dart';
+import 'package:happyhour_app/domain/bars/models/happy_hour_time.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'bar_dto.g.dart';

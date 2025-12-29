@@ -1,35 +1,34 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:happyhour_app/domain/entities/bar.dart';
-import 'package:happyhour_app/domain/repositories/bar_repository.dart';
-import 'package:happyhour_app/domain/value_objects/filter_mode.dart';
-import 'package:happyhour_app/domain/value_objects/sort_preference.dart';
-import 'package:happyhour_app/infrastructure/api/bars_api_client.dart';
-import 'package:happyhour_app/presentation/cubits/bars_list/bars_list_state.dart';
+import 'package:happyhour_app/application/bars/bar_list/bar_list_state.dart';
+import 'package:happyhour_app/domain/bars/entities/bar.dart';
+import 'package:happyhour_app/domain/bars/enums/filter_mode.dart';
+import 'package:happyhour_app/domain/bars/enums/sort_preference.dart';
+import 'package:happyhour_app/infrastructure/bars/repository/i_bar_repository.dart';
 
 /// Cubit for managing the bars list screen state.
-class BarsListCubit extends Cubit<BarsListState> {
-  final BarRepository _repository;
+class BarListCubit extends Cubit<BarListState> {
+  final IBarRepository _repository;
 
-  BarsListCubit({required BarRepository repository})
+  BarListCubit({required IBarRepository repository})
     : _repository = repository,
-      super(const BarsListInitial());
+      super(const BarListInitial());
 
   /// Load all bars from the repository.
   Future<void> loadBars() async {
-    emit(const BarsListLoading());
+    emit(const BarListLoading());
 
     try {
       final bars = await _repository.getAllBars();
       emit(
-        BarsListLoaded(
+        BarListLoaded(
           bars: bars,
           filteredBars: bars,
         ),
       );
-    } on BarsApiException catch (e) {
-      emit(BarsListError(e.message));
+    } on BarRepositoryException catch (e) {
+      emit(BarListError(e.message));
     } catch (e) {
-      emit(BarsListError('Failed to load bars: $e'));
+      emit(BarListError('Failed to load bars: $e'));
     }
   }
 
@@ -40,7 +39,7 @@ class BarsListCubit extends Cubit<BarsListState> {
     try {
       final bars = await _repository.getAllBars();
 
-      if (currentState is BarsListLoaded) {
+      if (currentState is BarListLoaded) {
         final filteredBars = _applyFilterAndSort(
           bars,
           currentState.filterMode,
@@ -55,23 +54,23 @@ class BarsListCubit extends Cubit<BarsListState> {
         );
       } else {
         emit(
-          BarsListLoaded(
+          BarListLoaded(
             bars: bars,
             filteredBars: bars,
           ),
         );
       }
-    } on BarsApiException catch (e) {
-      if (currentState is BarsListLoaded) {
+    } on BarRepositoryException catch (e) {
+      if (currentState is BarListLoaded) {
         emit(currentState.copyWith(errorBanner: e.message));
       } else {
-        emit(BarsListError(e.message));
+        emit(BarListError(e.message));
       }
     } catch (e) {
-      if (currentState is BarsListLoaded) {
+      if (currentState is BarListLoaded) {
         emit(currentState.copyWith(errorBanner: e.toString()));
       } else {
-        emit(BarsListError('Failed to refresh: $e'));
+        emit(BarListError('Failed to refresh: $e'));
       }
     }
   }
@@ -79,7 +78,7 @@ class BarsListCubit extends Cubit<BarsListState> {
   /// Set the filter mode.
   void setFilter(FilterMode filterMode) {
     final currentState = state;
-    if (currentState is BarsListLoaded) {
+    if (currentState is BarListLoaded) {
       final filteredBars = _applyFilterAndSort(
         currentState.bars,
         filterMode,
@@ -97,7 +96,7 @@ class BarsListCubit extends Cubit<BarsListState> {
   /// Set the sort preference.
   void setSort(SortPreference sortPreference) {
     final currentState = state;
-    if (currentState is BarsListLoaded) {
+    if (currentState is BarListLoaded) {
       final filteredBars = _applyFilterAndSort(
         currentState.bars,
         currentState.filterMode,
@@ -115,7 +114,7 @@ class BarsListCubit extends Cubit<BarsListState> {
   /// Update bars with distance from user.
   void updateBarsWithDistance(List<Bar> barsWithDistance) {
     final currentState = state;
-    if (currentState is BarsListLoaded) {
+    if (currentState is BarListLoaded) {
       final filteredBars = _applyFilterAndSort(
         barsWithDistance,
         currentState.filterMode,
@@ -133,7 +132,7 @@ class BarsListCubit extends Cubit<BarsListState> {
   /// Clear the error banner.
   void clearErrorBanner() {
     final currentState = state;
-    if (currentState is BarsListLoaded) {
+    if (currentState is BarListLoaded) {
       emit(currentState.copyWith(clearErrorBanner: true));
     }
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:happyhour_app/domain/value_objects/filter_mode.dart';
+import 'package:happyhour_app/domain/bars/enums/filter_mode.dart';
 
 /// A filter chip bar for toggling between ALL and ONGOING filter modes.
 class FilterChipBar extends StatelessWidget {

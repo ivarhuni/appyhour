@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:happyhour_app/domain/repositories/bar_repository.dart';
-import 'package:happyhour_app/infrastructure/repositories/bar_repository_impl.dart';
-import 'package:happyhour_app/presentation/cubits/bar_detail/bar_detail_cubit.dart';
-import 'package:happyhour_app/presentation/cubits/bars_list/bars_list_cubit.dart';
-import 'package:happyhour_app/presentation/screens/bar_detail_screen.dart';
-import 'package:happyhour_app/presentation/screens/bars_list_screen.dart';
+import 'package:happyhour_app/application/bars/bar_detail/bar_detail_cubit.dart';
+import 'package:happyhour_app/application/bars/bar_list/bar_list_cubit.dart';
+import 'package:happyhour_app/infrastructure/bars/repository/bar_repository.dart';
+import 'package:happyhour_app/infrastructure/bars/repository/i_bar_repository.dart';
+import 'package:happyhour_app/presentation/bars/bar_detail/bar_detail.dart';
+import 'package:happyhour_app/presentation/bars/bar_list/bar_list.dart';
 
 void main() {
   runApp(const HappyHourApp());
@@ -17,9 +17,9 @@ class HappyHourApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final barRepository = BarRepositoryImpl();
+    final barRepository = BarRepository();
 
-    return RepositoryProvider<BarRepository>.value(
+    return RepositoryProvider<IBarRepository>.value(
       value: barRepository,
       child: MaterialApp.router(
         title: 'Happy Hour',
@@ -31,15 +31,15 @@ class HappyHourApp extends StatelessWidget {
     );
   }
 
-  GoRouter _router(BarRepository repository) {
+  GoRouter _router(IBarRepository repository) {
     return GoRouter(
       initialLocation: '/',
       routes: [
         GoRoute(
           path: '/',
           builder: (context, state) => BlocProvider(
-            create: (_) => BarsListCubit(repository: repository),
-            child: const BarsListScreen(),
+            create: (_) => BarListCubit(repository: repository),
+            child: const BarList(),
           ),
         ),
         GoRoute(
@@ -49,7 +49,7 @@ class HappyHourApp extends StatelessWidget {
             return BlocProvider(
               create: (_) =>
                   BarDetailCubit(repository: repository, barId: barId),
-              child: const BarDetailScreen(),
+              child: const BarDetail(),
             );
           },
         ),

@@ -1,14 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:happyhour_app/infrastructure/api/bars_api_client.dart';
-import 'package:happyhour_app/infrastructure/dto/bar_dto.dart';
-import 'package:happyhour_app/infrastructure/repositories/bar_repository_impl.dart';
+import 'package:happyhour_app/infrastructure/bars/api/bars_api_client.dart';
+import 'package:happyhour_app/infrastructure/bars/dto/bar_dto.dart';
+import 'package:happyhour_app/infrastructure/bars/repository/bar_repository.dart';
+import 'package:happyhour_app/infrastructure/bars/repository/i_bar_repository.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockBarsApiClient extends Mock implements BarsApiClient {}
 
 void main() {
   late MockBarsApiClient mockApiClient;
-  late BarRepositoryImpl repository;
+  late BarRepository repository;
 
   const testBarsResponse = BarsResponse(
     generatedAt: '2024-01-01T00:00:00Z',
@@ -47,10 +48,10 @@ void main() {
 
   setUp(() {
     mockApiClient = MockBarsApiClient();
-    repository = BarRepositoryImpl(apiClient: mockApiClient);
+    repository = BarRepository(apiClient: mockApiClient);
   });
 
-  group('BarRepositoryImpl', () {
+  group('BarRepository', () {
     group('getAllBars', () {
       test('returns list of domain Bar entities', () async {
         when(
@@ -68,14 +69,14 @@ void main() {
         expect(bars[1].twoForOne, true);
       });
 
-      test('throws when API client throws', () {
+      test('throws BarRepositoryException when API client throws', () {
         when(
           () => mockApiClient.fetchBars(),
         ).thenThrow(const BarsApiException('Network error'));
 
         expect(
           () => repository.getAllBars(),
-          throwsA(isA<BarsApiException>()),
+          throwsA(isA<BarRepositoryException>()),
         );
       });
 

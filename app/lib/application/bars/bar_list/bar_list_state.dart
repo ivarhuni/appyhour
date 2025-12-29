@@ -1,35 +1,35 @@
 import 'package:equatable/equatable.dart';
-import 'package:happyhour_app/domain/entities/bar.dart';
-import 'package:happyhour_app/domain/value_objects/filter_mode.dart';
-import 'package:happyhour_app/domain/value_objects/sort_preference.dart';
+import 'package:happyhour_app/domain/bars/entities/bar.dart';
+import 'package:happyhour_app/domain/bars/enums/filter_mode.dart';
+import 'package:happyhour_app/domain/bars/enums/sort_preference.dart';
 
 /// Sealed class for bars list screen state.
-sealed class BarsListState extends Equatable {
-  const BarsListState();
+sealed class BarListState extends Equatable {
+  const BarListState();
 }
 
-class BarsListInitial extends BarsListState {
-  const BarsListInitial();
+class BarListInitial extends BarListState {
+  const BarListInitial();
 
   @override
   List<Object?> get props => [];
 }
 
-class BarsListLoading extends BarsListState {
-  const BarsListLoading();
+class BarListLoading extends BarListState {
+  const BarListLoading();
 
   @override
   List<Object?> get props => [];
 }
 
-class BarsListLoaded extends BarsListState {
+class BarListLoaded extends BarListState {
   final List<Bar> bars;
   final List<Bar> filteredBars;
   final FilterMode filterMode;
   final SortPreference sortPreference;
   final String? errorBanner;
 
-  const BarsListLoaded({
+  const BarListLoaded({
     required this.bars,
     required this.filteredBars,
     this.filterMode = FilterMode.all,
@@ -37,7 +37,7 @@ class BarsListLoaded extends BarsListState {
     this.errorBanner,
   });
 
-  BarsListLoaded copyWith({
+  BarListLoaded copyWith({
     List<Bar>? bars,
     List<Bar>? filteredBars,
     FilterMode? filterMode,
@@ -45,7 +45,7 @@ class BarsListLoaded extends BarsListState {
     String? errorBanner,
     bool clearErrorBanner = false,
   }) {
-    return BarsListLoaded(
+    return BarListLoaded(
       bars: bars ?? this.bars,
       filteredBars: filteredBars ?? this.filteredBars,
       filterMode: filterMode ?? this.filterMode,
@@ -64,10 +64,10 @@ class BarsListLoaded extends BarsListState {
   ];
 }
 
-class BarsListError extends BarsListState {
+class BarListError extends BarListState {
   final String message;
 
-  const BarsListError(this.message);
+  const BarListError(this.message);
 
   @override
   List<Object?> get props => [message];

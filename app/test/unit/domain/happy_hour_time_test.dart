@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:happyhour_app/domain/value_objects/happy_hour_time.dart';
+import 'package:happyhour_app/domain/bars/models/happy_hour_time.dart';
 
 void main() {
   group('HappyHourTime', () {

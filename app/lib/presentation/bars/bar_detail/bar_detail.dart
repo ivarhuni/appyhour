@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:happyhour_app/domain/entities/bar.dart';
-import 'package:happyhour_app/presentation/cubits/bar_detail/bar_detail_cubit.dart';
-import 'package:happyhour_app/presentation/cubits/bar_detail/bar_detail_state.dart';
-import 'package:happyhour_app/presentation/widgets/bar_map.dart';
+import 'package:happyhour_app/application/bars/bar_detail/bar_detail_cubit.dart';
+import 'package:happyhour_app/application/bars/bar_detail/bar_detail_state.dart';
+import 'package:happyhour_app/domain/bars/entities/bar.dart';
+import 'package:happyhour_app/presentation/bars/bar_detail/bar_map.dart';
 
 /// Screen displaying detailed information about a single bar.
-class BarDetailScreen extends StatelessWidget {
-  const BarDetailScreen({super.key});
+class BarDetail extends StatelessWidget {
+  const BarDetail({super.key});
 
   @override
   Widget build(BuildContext context) {

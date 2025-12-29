@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:happyhour_app/domain/entities/bar.dart';
+import 'package:happyhour_app/domain/bars/entities/bar.dart';
 
 /// A list item widget displaying bar summary information.
 class BarListItem extends StatelessWidget {
