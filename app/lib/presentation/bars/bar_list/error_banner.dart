@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:happyhour_app/gen_l10n/app_localizations.dart';
 
 /// A dismissible error banner widget.
 class ErrorBanner extends StatelessWidget {
@@ -48,7 +49,7 @@ class ErrorBanner extends StatelessWidget {
             TextButton(
               onPressed: onRetry,
               child: Text(
-                'Retry',
+                AppLocalizations.of(context).actionRetry,
                 style: TextStyle(color: theme.colorScheme.error),
               ),
             ),

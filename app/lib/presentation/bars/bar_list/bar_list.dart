@@ -5,6 +5,7 @@ import 'package:happyhour_app/application/bars/bar_list/bar_list_cubit.dart';
 import 'package:happyhour_app/application/bars/bar_list/bar_list_state.dart';
 import 'package:happyhour_app/domain/bars/enums/filter_mode.dart';
 import 'package:happyhour_app/domain/bars/enums/sort_preference.dart';
+import 'package:happyhour_app/gen_l10n/app_localizations.dart';
 import 'package:happyhour_app/infrastructure/core/services/location_service.dart';
 import 'package:happyhour_app/presentation/bars/bar_list/bar_list_item.dart';
 import 'package:happyhour_app/presentation/bars/bar_list/error_banner.dart';
@@ -65,10 +66,12 @@ class _BarListState extends State<BarList> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
-        title: const Text('Happy Hour'),
+        title: Text(l10n.appTitle),
         centerTitle: true,
         elevation: 0,
         backgroundColor: theme.colorScheme.surface,
@@ -77,13 +80,13 @@ class _BarListState extends State<BarList> {
           if (!_hasLocationPermission)
             IconButton(
               icon: const Icon(Icons.location_off),
-              tooltip: 'Enable location',
+              tooltip: l10n.locationEnable,
               onPressed: _requestLocation,
             )
           else
             IconButton(
               icon: const Icon(Icons.location_on),
-              tooltip: 'Location enabled',
+              tooltip: l10n.locationEnabled,
               onPressed: _updateBarsWithLocation,
             ),
         ],
@@ -107,6 +110,7 @@ class _BarListState extends State<BarList> {
 
   Widget _buildErrorState(BuildContext context, String message) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return Center(
       child: Padding(
@@ -121,7 +125,7 @@ class _BarListState extends State<BarList> {
             ),
             const SizedBox(height: 16),
             Text(
-              'Oops!',
+              l10n.msgOops,
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -138,7 +142,7 @@ class _BarListState extends State<BarList> {
             FilledButton.icon(
               onPressed: () => context.read<BarListCubit>().loadBars(),
               icon: const Icon(Icons.refresh),
-              label: const Text('Try Again'),
+              label: Text(l10n.actionTryAgain),
             ),
           ],
         ),
@@ -219,6 +223,7 @@ class _BarListState extends State<BarList> {
 
   Widget _buildEmptyState(BuildContext context, FilterMode filterMode) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
     final isFiltered = filterMode == FilterMode.ongoing;
 
     return Center(
@@ -234,16 +239,14 @@ class _BarListState extends State<BarList> {
             ),
             const SizedBox(height: 16),
             Text(
-              isFiltered ? 'No happy hours right now' : 'No bars found',
+              isFiltered ? l10n.msgNoHappyHoursNow : l10n.msgNoBarsFound,
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              isFiltered
-                  ? 'Check back later or view all bars'
-                  : 'Pull down to refresh',
+              isFiltered ? l10n.msgCheckBackLater : l10n.msgPullToRefresh,
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -254,7 +257,7 @@ class _BarListState extends State<BarList> {
                 onPressed: () {
                   context.read<BarListCubit>().setFilter(FilterMode.all);
                 },
-                child: const Text('Show all bars'),
+                child: Text(l10n.actionShowAllBars),
               ),
             ],
           ],
