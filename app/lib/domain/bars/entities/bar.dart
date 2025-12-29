@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:happyhour_app/domain/value_objects/happy_hour_days.dart';
-import 'package:happyhour_app/domain/value_objects/happy_hour_time.dart';
+import 'package:happyhour_app/domain/bars/models/happy_hour_days.dart';
+import 'package:happyhour_app/domain/bars/models/happy_hour_time.dart';
 
 /// Domain entity for a bar/restaurant with happy hour information.
 /// Immutable value object with computed properties.

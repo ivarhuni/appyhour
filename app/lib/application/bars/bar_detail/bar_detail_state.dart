@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:happyhour_app/domain/entities/bar.dart';
+import 'package:happyhour_app/domain/bars/entities/bar.dart';
 
 /// Sealed class for bar detail screen state.
 sealed class BarDetailState extends Equatable {

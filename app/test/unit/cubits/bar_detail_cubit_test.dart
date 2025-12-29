@@ -1,14 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:happyhour_app/domain/entities/bar.dart';
-import 'package:happyhour_app/domain/repositories/bar_repository.dart';
-import 'package:happyhour_app/domain/value_objects/happy_hour_days.dart';
-import 'package:happyhour_app/domain/value_objects/happy_hour_time.dart';
-import 'package:happyhour_app/infrastructure/api/bars_api_client.dart';
-import 'package:happyhour_app/presentation/cubits/bar_detail/bar_detail_cubit.dart';
-import 'package:happyhour_app/presentation/cubits/bar_detail/bar_detail_state.dart';
+import 'package:happyhour_app/application/bars/bar_detail/bar_detail_cubit.dart';
+import 'package:happyhour_app/application/bars/bar_detail/bar_detail_state.dart';
+import 'package:happyhour_app/domain/bars/entities/bar.dart';
+import 'package:happyhour_app/domain/bars/models/happy_hour_days.dart';
+import 'package:happyhour_app/domain/bars/models/happy_hour_time.dart';
+import 'package:happyhour_app/infrastructure/bars/repository/i_bar_repository.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockBarRepository extends Mock implements BarRepository {}
+class MockBarRepository extends Mock implements IBarRepository {}
 
 void main() {
   late MockBarRepository mockRepository;
@@ -83,7 +82,7 @@ void main() {
     test('emits error when fetch fails', () async {
       when(
         () => mockRepository.getAllBars(),
-      ).thenThrow(const BarsApiException('Network error'));
+      ).thenThrow(const BarRepositoryException('Network error'));
 
       final cubit = BarDetailCubit(repository: mockRepository, barId: 1);
 

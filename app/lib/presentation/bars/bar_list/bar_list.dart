@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:happyhour_app/domain/value_objects/filter_mode.dart';
-import 'package:happyhour_app/domain/value_objects/sort_preference.dart';
-import 'package:happyhour_app/infrastructure/services/location_service.dart';
-import 'package:happyhour_app/presentation/cubits/bars_list/bars_list_cubit.dart';
-import 'package:happyhour_app/presentation/cubits/bars_list/bars_list_state.dart';
-import 'package:happyhour_app/presentation/widgets/bar_list_item.dart';
-import 'package:happyhour_app/presentation/widgets/error_banner.dart';
-import 'package:happyhour_app/presentation/widgets/filter_chip_bar.dart';
-import 'package:happyhour_app/presentation/widgets/sort_dropdown.dart';
+import 'package:happyhour_app/application/bars/bar_list/bar_list_cubit.dart';
+import 'package:happyhour_app/application/bars/bar_list/bar_list_state.dart';
+import 'package:happyhour_app/domain/bars/enums/filter_mode.dart';
+import 'package:happyhour_app/domain/bars/enums/sort_preference.dart';
+import 'package:happyhour_app/infrastructure/core/services/location_service.dart';
+import 'package:happyhour_app/presentation/bars/bar_list/bar_list_item.dart';
+import 'package:happyhour_app/presentation/bars/bar_list/error_banner.dart';
+import 'package:happyhour_app/presentation/bars/bar_list/filter_chip_bar.dart';
+import 'package:happyhour_app/presentation/bars/bar_list/sort_dropdown.dart';
 
 /// Main screen displaying a scrollable list of bars.
-class BarsListScreen extends StatefulWidget {
-  const BarsListScreen({super.key});
+class BarList extends StatefulWidget {
+  const BarList({super.key});
 
   @override
-  State<BarsListScreen> createState() => _BarsListScreenState();
+  State<BarList> createState() => _BarListState();
 }
 
-class _BarsListScreenState extends State<BarsListScreen> {
+class _BarListState extends State<BarList> {
   final LocationService _locationService = LocationService();
   bool _locationRequested = false;
   bool _hasLocationPermission = false;
@@ -27,7 +27,7 @@ class _BarsListScreenState extends State<BarsListScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<BarsListCubit>().loadBars();
+    context.read<BarListCubit>().loadBars();
   }
 
   Future<void> _requestLocation() async {
@@ -50,9 +50,9 @@ class _BarsListScreenState extends State<BarsListScreen> {
     final position = await _locationService.getCurrentPosition();
     if (position == null || !mounted) return;
 
-    final cubit = context.read<BarsListCubit>();
+    final cubit = context.read<BarListCubit>();
     final state = cubit.state;
-    if (state is BarsListLoaded) {
+    if (state is BarListLoaded) {
       final barsWithDistance = _locationService.updateBarsWithDistance(
         state.bars,
         position,
@@ -88,17 +88,17 @@ class _BarsListScreenState extends State<BarsListScreen> {
             ),
         ],
       ),
-      body: BlocBuilder<BarsListCubit, BarsListState>(
+      body: BlocBuilder<BarListCubit, BarListState>(
         builder: (context, state) {
           return switch (state) {
-            BarsListInitial() => const Center(
+            BarListInitial() => const Center(
               child: CircularProgressIndicator(),
             ),
-            BarsListLoading() => const Center(
+            BarListLoading() => const Center(
               child: CircularProgressIndicator(),
             ),
-            BarsListError(:final message) => _buildErrorState(context, message),
-            BarsListLoaded() => _buildLoadedState(context, state),
+            BarListError(:final message) => _buildErrorState(context, message),
+            BarListLoaded() => _buildLoadedState(context, state),
           };
         },
       ),
@@ -136,7 +136,7 @@ class _BarsListScreenState extends State<BarsListScreen> {
             ),
             const SizedBox(height: 24),
             FilledButton.icon(
-              onPressed: () => context.read<BarsListCubit>().loadBars(),
+              onPressed: () => context.read<BarListCubit>().loadBars(),
               icon: const Icon(Icons.refresh),
               label: const Text('Try Again'),
             ),
@@ -146,7 +146,7 @@ class _BarsListScreenState extends State<BarsListScreen> {
     );
   }
 
-  Widget _buildLoadedState(BuildContext context, BarsListLoaded state) {
+  Widget _buildLoadedState(BuildContext context, BarListLoaded state) {
     final hasDistanceData = state.bars.any(
       (bar) => bar.distanceFromUser != null,
     );
@@ -163,7 +163,7 @@ class _BarsListScreenState extends State<BarsListScreen> {
                 child: FilterChipBar(
                   selectedMode: state.filterMode,
                   onFilterChanged: (mode) {
-                    context.read<BarsListCubit>().setFilter(mode);
+                    context.read<BarListCubit>().setFilter(mode);
                   },
                 ),
               ),
@@ -174,7 +174,7 @@ class _BarsListScreenState extends State<BarsListScreen> {
                   if (sort == SortPreference.distance && !hasDistanceData) {
                     _requestLocation();
                   }
-                  context.read<BarsListCubit>().setSort(sort);
+                  context.read<BarListCubit>().setSort(sort);
                 },
                 showDistanceOption: hasDistanceData || _hasLocationPermission,
                 showRatingOption: hasRatingData,
@@ -186,8 +186,8 @@ class _BarsListScreenState extends State<BarsListScreen> {
         if (state.errorBanner != null)
           ErrorBanner(
             message: state.errorBanner!,
-            onDismiss: () => context.read<BarsListCubit>().clearErrorBanner(),
-            onRetry: () => context.read<BarsListCubit>().refresh(),
+            onDismiss: () => context.read<BarListCubit>().clearErrorBanner(),
+            onRetry: () => context.read<BarListCubit>().refresh(),
           ),
 
         Expanded(
@@ -195,7 +195,7 @@ class _BarsListScreenState extends State<BarsListScreen> {
               ? _buildEmptyState(context, state.filterMode)
               : RefreshIndicator(
                   onRefresh: () async {
-                    await context.read<BarsListCubit>().refresh();
+                    await context.read<BarListCubit>().refresh();
                     if (_hasLocationPermission) {
                       await _updateBarsWithLocation();
                     }
@@ -252,7 +252,7 @@ class _BarsListScreenState extends State<BarsListScreen> {
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () {
-                  context.read<BarsListCubit>().setFilter(FilterMode.all);
+                  context.read<BarListCubit>().setFilter(FilterMode.all);
                 },
                 child: const Text('Show all bars'),
               ),

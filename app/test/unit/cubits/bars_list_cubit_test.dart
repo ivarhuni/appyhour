@@ -1,16 +1,15 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:happyhour_app/domain/entities/bar.dart';
-import 'package:happyhour_app/domain/repositories/bar_repository.dart';
-import 'package:happyhour_app/domain/value_objects/happy_hour_days.dart';
-import 'package:happyhour_app/domain/value_objects/happy_hour_time.dart';
-import 'package:happyhour_app/domain/value_objects/sort_preference.dart';
-import 'package:happyhour_app/infrastructure/api/bars_api_client.dart';
-import 'package:happyhour_app/presentation/cubits/bars_list/bars_list_cubit.dart';
-import 'package:happyhour_app/presentation/cubits/bars_list/bars_list_state.dart';
+import 'package:happyhour_app/application/bars/bar_list/bar_list_cubit.dart';
+import 'package:happyhour_app/application/bars/bar_list/bar_list_state.dart';
+import 'package:happyhour_app/domain/bars/entities/bar.dart';
+import 'package:happyhour_app/domain/bars/enums/sort_preference.dart';
+import 'package:happyhour_app/domain/bars/models/happy_hour_days.dart';
+import 'package:happyhour_app/domain/bars/models/happy_hour_time.dart';
+import 'package:happyhour_app/infrastructure/bars/repository/i_bar_repository.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockBarRepository extends Mock implements BarRepository {}
+class MockBarRepository extends Mock implements IBarRepository {}
 
 void main() {
   late MockBarRepository mockRepository;
@@ -64,55 +63,55 @@ void main() {
     mockRepository = MockBarRepository();
   });
 
-  group('BarsListCubit', () {
-    blocTest<BarsListCubit, BarsListState>(
-      'emits [BarsListLoading, BarsListLoaded] when loadBars succeeds',
+  group('BarListCubit', () {
+    blocTest<BarListCubit, BarListState>(
+      'emits [BarListLoading, BarListLoaded] when loadBars succeeds',
       setUp: () {
         when(
           () => mockRepository.getAllBars(),
         ).thenAnswer((_) async => testBars);
       },
-      build: () => BarsListCubit(repository: mockRepository),
+      build: () => BarListCubit(repository: mockRepository),
       act: (cubit) => cubit.loadBars(),
       expect: () => [
-        const BarsListLoading(),
-        isA<BarsListLoaded>()
+        const BarListLoading(),
+        isA<BarListLoaded>()
             .having((s) => s.bars.length, 'bars length', 3)
             .having((s) => s.filteredBars.length, 'filteredBars length', 3),
       ],
     );
 
-    blocTest<BarsListCubit, BarsListState>(
-      'emits [BarsListLoading, BarsListError] when loadBars fails',
+    blocTest<BarListCubit, BarListState>(
+      'emits [BarListLoading, BarListError] when loadBars fails',
       setUp: () {
         when(
           () => mockRepository.getAllBars(),
-        ).thenThrow(const BarsApiException('Network error'));
+        ).thenThrow(const BarRepositoryException('Network error'));
       },
-      build: () => BarsListCubit(repository: mockRepository),
+      build: () => BarListCubit(repository: mockRepository),
       act: (cubit) => cubit.loadBars(),
       expect: () => [
-        const BarsListLoading(),
-        const BarsListError('Network error'),
+        const BarListLoading(),
+        const BarListError('Network error'),
       ],
     );
 
-    blocTest<BarsListCubit, BarsListState>(
+    blocTest<BarListCubit, BarListState>(
       'setSort sorts by beer price ascending',
       setUp: () {
         when(
           () => mockRepository.getAllBars(),
         ).thenAnswer((_) async => testBars);
       },
-      build: () => BarsListCubit(repository: mockRepository),
+      build: () => BarListCubit(repository: mockRepository),
       act: (cubit) async {
         await cubit.loadBars();
         cubit.setSort(SortPreference.beerPrice);
       },
       expect: () => [
-        const BarsListLoading(),
-        isA<BarsListLoaded>(),
-        isA<BarsListLoaded>()
+        const BarListLoading(),
+        isA<BarListLoaded>(),
+        isA<BarListLoaded>()
             .having(
               (s) => s.sortPreference,
               'sortPreference',
@@ -131,22 +130,22 @@ void main() {
       ],
     );
 
-    blocTest<BarsListCubit, BarsListState>(
+    blocTest<BarListCubit, BarListState>(
       'refresh updates bars while in loaded state',
       setUp: () {
         when(
           () => mockRepository.getAllBars(),
         ).thenAnswer((_) async => testBars);
       },
-      build: () => BarsListCubit(repository: mockRepository),
-      seed: () => BarsListLoaded(
+      build: () => BarListCubit(repository: mockRepository),
+      seed: () => BarListLoaded(
         bars: testBars,
         filteredBars: testBars,
         sortPreference: SortPreference.beerPrice,
       ),
       act: (cubit) => cubit.refresh(),
       expect: () => [
-        isA<BarsListLoaded>()
+        isA<BarListLoaded>()
             .having(
               (s) => s.sortPreference,
               'sortPreference',
@@ -156,14 +155,14 @@ void main() {
       ],
     );
 
-    blocTest<BarsListCubit, BarsListState>(
+    blocTest<BarListCubit, BarListState>(
       'updateBarsWithDistance updates bars and reapplies filter/sort',
       setUp: () {
         when(
           () => mockRepository.getAllBars(),
         ).thenAnswer((_) async => testBars);
       },
-      build: () => BarsListCubit(repository: mockRepository),
+      build: () => BarListCubit(repository: mockRepository),
       act: (cubit) async {
         await cubit.loadBars();
         final barsWithDistance = testBars.map((bar) {
@@ -172,9 +171,9 @@ void main() {
         cubit.updateBarsWithDistance(barsWithDistance);
       },
       expect: () => [
-        const BarsListLoading(),
-        isA<BarsListLoaded>(),
-        isA<BarsListLoaded>().having(
+        const BarListLoading(),
+        isA<BarListLoaded>(),
+        isA<BarListLoaded>().having(
           (s) => s.bars.every((b) => b.distanceFromUser != null),
           'all bars have distance',
           true,
@@ -182,22 +181,22 @@ void main() {
       ],
     );
 
-    blocTest<BarsListCubit, BarsListState>(
+    blocTest<BarListCubit, BarListState>(
       'clearErrorBanner clears the error banner',
       setUp: () {
         when(
           () => mockRepository.getAllBars(),
         ).thenAnswer((_) async => testBars);
       },
-      build: () => BarsListCubit(repository: mockRepository),
-      seed: () => BarsListLoaded(
+      build: () => BarListCubit(repository: mockRepository),
+      seed: () => BarListLoaded(
         bars: testBars,
         filteredBars: testBars,
         errorBanner: 'Some error',
       ),
       act: (cubit) => cubit.clearErrorBanner(),
       expect: () => [
-        isA<BarsListLoaded>().having(
+        isA<BarListLoaded>().having(
           (s) => s.errorBanner,
           'errorBanner',
           null,

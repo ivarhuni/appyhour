@@ -1,0 +1,182 @@
+# Dart & Flutter Style Guide
+# Reference: https://dart.dev/effective-dart
+
+---
+
+## NAMING
+
+- **Types** (classes, enums, typedefs): `UpperCamelCase`
+- **Extensions**: `UpperCamelCase`
+- **Packages, directories, files**: `lowercase_with_underscores`
+- **Import prefixes**: `lowercase_with_underscores`
+- **Variables, functions, parameters**: `lowerCamelCase`
+- **Constants**: `lowerCamelCase` (NOT `SCREAMING_CAPS` or `kPrefixed`)
+- **Acronyms 3+ letters**: Capitalize like words (`HttpRequest`, `Id`)
+- **Unused callback params**: Use wildcard `_`
+- **DON'T** use leading underscore except for private members
+- **DON'T** use Hungarian notation prefixes (`k`, `m`, `s`)
+- **DON'T** explicitly name libraries
+
+---
+
+## IMPORTS
+
+Order (separated by blank lines, alphabetized within each):
+1. `dart:` imports
+2. `package:` imports
+3. Relative imports
+4. Exports (after all imports)
+
+---
+
+## FORMATTING
+
+- Run `dart format` before committing
+- Prefer lines ≤80 characters
+- Always use curly braces (exception: single-line `if` with no `else`)
+
+---
+
+## NULL SAFETY
+
+- **DON'T** initialize to `null` explicitly: `Item? x;` not `Item? x = null;`
+- **DON'T** use `null` as default param value
+- **PREFER** `??` for null-to-boolean: `if (x?.isEnabled ?? false)`
+- **AVOID** `late` if you need to check initialization
+- Use type promotion with `is` checks
+
+---
+
+## STRINGS & COLLECTIONS
+
+- Use adjacent strings for multi-line: `'Hello ' 'world'`
+- Use interpolation: `'Hello, $name'` not `'Hello, ' + name`
+- Use collection literals: `<Point>[]` not `List<Point>()`
+- Use `isEmpty`/`isNotEmpty` not `.length == 0`
+- Prefer `map`, `where`, `fold` over `forEach` with lambdas
+- Use `for` loops for complex iteration
+
+---
+
+## FUNCTIONS & VARIABLES
+
+- Use function declarations, not lambdas for named functions
+- Use tear-offs: `bars.map(getName)` not `bars.map((b) => getName(b))`
+- Use `=` for named param defaults: `{int at = 0}`
+- Prefer `final` for non-reassigned locals
+- Avoid caching computable values
+
+---
+
+## CLASSES & MEMBERS
+
+- Don't wrap fields in trivial getters/setters
+- Use `final` for read-only properties
+- Use `=>` for simple one-expression members
+- Don't use `this.` unless needed for disambiguation
+- Use initializing formals: `Point(this.x, this.y);`
+- Use `;` for empty constructor bodies, not `{}`
+- **DON'T** use `new`
+- **DON'T** use redundant `const` in const contexts
+- **CONSIDER** making constructors `const` when possible
+
+---
+
+## ERROR HANDLING
+
+- Prefer `on SpecificException catch (e)` over bare `catch (e)`
+- Never silently discard errors
+- Use `Error` for programmer mistakes, `Exception` for runtime errors
+
+---
+
+## ASYNC
+
+- Prefer `async/await` over `.then()` chains
+- Don't use `async` when just forwarding a Future
+- Use `Future<void>` for async methods without return values
+
+---
+
+## TYPES
+
+- Annotate variables without initializers
+- Annotate fields/top-level vars if type isn't obvious
+- **DON'T** redundantly annotate initialized locals
+- Annotate function return types and parameters
+- Prefer `Object?` over `dynamic`
+- Use function signatures in type annotations
+- Don't specify return type for setters
+- Use modern typedef: `typedef F = int Function(T);`
+
+---
+
+## PARAMETERS
+
+- Avoid positional booleans: `Task(completed: true)` not `Task(true)`
+- Avoid optional positional params if earlier ones might be omitted
+- Use inclusive start, exclusive end for ranges
+
+---
+
+## EQUALITY
+
+- Override `hashCode` if overriding `==`
+- Make `==` obey mathematical equality
+- Avoid custom equality for mutable classes
+
+---
+
+## DESIGN PRINCIPLES
+
+- Use terms consistently across the API
+- Avoid abbreviations (except common: `id`, `http`, `url`, `api`)
+- Put descriptive noun last: `beerPrice` not `priceOfBeer`
+- Make code read like sentences: `if (bar.isHappyHourActive())`
+- Prefer private by default
+- Avoid single-member abstract classes (use functions)
+- Avoid static-only classes (use top-level functions)
+- Prefer composition over inheritance
+- Use `mixin` for code reuse without inheritance
+
+---
+
+## PROJECT ARCHITECTURE
+
+```
+lib/
+├── application/          # Cubits (business logic)
+│   └── <feature>/
+├── domain/               # Entities, value objects (no repos)
+│   └── <feature>/
+│       ├── entities/
+│       └── value_objects/
+├── infrastructure/       # Repos, APIs, DTOs
+│   ├── <feature>/
+│   │   ├── api/
+│   │   ├── dto/
+│   │   ├── i_<name>.dart    # Interface
+│   │   └── <name>.dart      # Implementation
+│   └── core/             # Shared services
+├── presentation/         # UI
+│   └── <feature>/
+│       ├── screens/
+│       └── widgets/
+└── main.dart
+```
+
+### Repository Pattern
+- Interface + implementation both in `infrastructure/`
+- Interface: `i_bar_repository.dart`
+- Implementation: `bar_repository.dart`
+- Domain layer has NO repository files
+
+---
+
+## FLUTTER-SPECIFIC
+
+- Prefer `const` widget constructors
+- Use `super.key` not `Key? key`
+- Prefer named parameters for widgets
+- Extract complex build methods to separate widgets
+- Avoid deeply nested widget trees

@@ -1,5 +1,5 @@
 import 'package:geolocator/geolocator.dart';
-import 'package:happyhour_app/domain/entities/bar.dart';
+import 'package:happyhour_app/domain/bars/entities/bar.dart';
 
 /// Service for handling location-related functionality.
 class LocationService {

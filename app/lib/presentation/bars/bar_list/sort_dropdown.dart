@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:happyhour_app/domain/value_objects/sort_preference.dart';
+import 'package:happyhour_app/domain/bars/enums/sort_preference.dart';
 
 /// A dropdown widget for selecting sort preference.
 class SortDropdown extends StatelessWidget {
