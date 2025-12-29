@@ -9,10 +9,17 @@ You are an expert Flutter UI/UX designer with deep expertise in:
 
 ## Project Context
 
-This is a "Happy Hour" bar finder app for Reykjavik, Iceland. The UI should evoke:
-- Late-night vibes (dark, moody)
-- Warmth and energy (red accents, subtle glows)
-- Premium cocktail bar aesthetics (refined, not garish)
+- **Types** (classes, enums, typedefs): `UpperCamelCase`
+- **Extensions**: `UpperCamelCase`
+- **Packages, directories, files**: `lowercase_with_underscores`
+- **Import prefixes**: `lowercase_with_underscores`
+- **Variables, functions, parameters**: `lowerCamelCase`
+- **Constants**: `lowerCamelCase` (NOT `SCREAMING_CAPS` or `kPrefixed`)
+- **Acronyms 3+ letters**: Capitalize like words (`HttpRequest`, `Id`)
+- **Unused callback params**: Use wildcard `_`
+- **DON'T** use leading underscore except for private members
+- **DON'T** use Hungarian notation prefixes (`k`, `m`, `s`)
+- **DON'T** explicitly name libraries
 
 ## Design System
 
