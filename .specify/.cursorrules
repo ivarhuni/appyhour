@@ -1,0 +1,84 @@
+# Speckit Agent Rules
+
+## PowerShell Command Execution (CRITICAL)
+
+This project runs on **Windows with PowerShell**. Follow these rules STRICTLY:
+
+### ❌ NEVER use bash syntax in terminal commands:
+```powershell
+# WRONG - && doesn't work in PowerShell
+cd C:\path && command
+
+# WRONG - $() bash substitution
+echo $(pwd)
+
+# WRONG - && chaining
+npm install && npm run build
+```
+
+### ✅ ALWAYS use PowerShell syntax:
+```powershell
+# CORRECT - Use semicolon for command chaining
+cd C:\path; command
+
+# CORRECT - Or use separate commands
+cd C:\path
+command
+
+# CORRECT - PowerShell subexpression
+Write-Output "$(Get-Location)"
+
+# CORRECT - Semicolon chaining
+npm install; npm run build
+```
+
+### Common Speckit Script Invocations
+
+```powershell
+# Check prerequisites (run from repo root)
+powershell -ExecutionPolicy Bypass -File .specify/scripts/powershell/check-prerequisites.ps1 -Json
+
+# Create new feature
+powershell -ExecutionPolicy Bypass -File .specify/scripts/powershell/create-new-feature.ps1 -Name "feature-name"
+
+# Setup plan
+powershell -ExecutionPolicy Bypass -File .specify/scripts/powershell/setup-plan.ps1 -Feature "feature-name"
+```
+
+### Before Running Any Terminal Command
+
+1. Check the OS from user_info: `win32` = Windows/PowerShell
+2. Use `;` not `&&` to chain commands
+3. Don't quote arguments unnecessarily in PowerShell
+4. Use `Set-Location` or `cd` then run the command separately if unsure
+
+---
+
+## Speckit Workflow
+
+The speckit system follows this workflow:
+
+1. **`/speckit.specify`** - Create feature specification (spec.md)
+2. **`/speckit.analyze`** (Optional) - Analyze spec for consistency
+3. **`/speckit.plan`** - Create implementation plan (plan.md, research.md, data-model.md, contracts/)
+4. **`/speckit.tasks`** - Generate executable task list (tasks.md)
+5. **`/speckit.implement`** - Execute tasks (spawn fresh agent with clean context)
+
+### Key Principles
+
+- One agent does specify → analyze → plan → tasks
+- A NEW agent is spawned with fresh context window for implementation
+- The tasks.md is the handoff document between planning and implementation agents
+- Each task should be independently executable without additional context
+
+---
+
+## File Locations
+
+| Type | Location |
+|------|----------|
+| Scripts | `.specify/scripts/powershell/` |
+| Templates | `.specify/templates/` |
+| Memory | `.specify/memory/` |
+| Feature specs | `specs/{###-feature-name}/` |
+

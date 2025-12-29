@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:happyhour_app/application/bars/bar_detail/bar_detail_cubit.dart';
 import 'package:happyhour_app/application/bars/bar_list/bar_list_cubit.dart';
+import 'package:happyhour_app/gen_l10n/app_localizations.dart';
 import 'package:happyhour_app/infrastructure/bars/repository/bar_repository.dart';
 import 'package:happyhour_app/infrastructure/bars/repository/i_bar_repository.dart';
 import 'package:happyhour_app/presentation/bars/bar_detail/bar_detail.dart';
@@ -27,6 +29,17 @@ class HappyHourApp extends StatelessWidget {
         theme: _buildTheme(Brightness.light),
         darkTheme: _buildTheme(Brightness.dark),
         routerConfig: _router(barRepository),
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [
+          Locale('en'),
+          Locale('is'),
+          Locale('pl'),
+        ],
       ),
     );
   }

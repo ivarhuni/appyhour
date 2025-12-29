@@ -1,0 +1,107 @@
+{
+  "@@locale": "en",
+  
+  "appTitle": "Happy Hour",
+  "@appTitle": { "description": "Main app title shown in app bar" },
+  
+  "actionTryAgain": "Try Again",
+  "@actionTryAgain": { "description": "Button text for retry actions" },
+  
+  "actionRetry": "Retry",
+  "@actionRetry": { "description": "Short retry button text" },
+  
+  "actionShowAllBars": "Show all bars",
+  "@actionShowAllBars": { "description": "Link to clear filter and show all bars" },
+  
+  "filterAll": "All",
+  "@filterAll": { "description": "Filter chip to show all bars" },
+  
+  "filterHappyHourNow": "Happy Hour Now",
+  "@filterHappyHourNow": { "description": "Filter chip to show only active happy hours" },
+  
+  "sortDefault": "Default",
+  "@sortDefault": { "description": "Default server order sorting" },
+  
+  "sortCheapestBeer": "Cheapest Beer",
+  "@sortCheapestBeer": { "description": "Sort by cheapest beer price" },
+  
+  "sortNearest": "Nearest",
+  "@sortNearest": { "description": "Sort by distance from user" },
+  
+  "sortTopRated": "Top Rated",
+  "@sortTopRated": { "description": "Sort by rating" },
+  
+  "sortLabelPrice": "Price",
+  "@sortLabelPrice": { "description": "Short label for price sort" },
+  
+  "sortLabelDistance": "Distance",
+  "@sortLabelDistance": { "description": "Short label for distance sort" },
+  
+  "sortLabelRating": "Rating",
+  "@sortLabelRating": { "description": "Short label for rating sort" },
+  
+  "labelHappyHour": "HAPPY HOUR",
+  "@labelHappyHour": { "description": "Happy hour status badge" },
+  
+  "labelTwoForOne": "2-for-1",
+  "@labelTwoForOne": { "description": "Two for one deal badge" },
+  
+  "labelTwoForOneAvailable": "2-for-1 deals available!",
+  "@labelTwoForOneAvailable": { "description": "Banner text for 2-for-1 deals" },
+  
+  "labelHappyHourPrices": "Happy Hour Prices",
+  "@labelHappyHourPrices": { "description": "Section header for prices" },
+  
+  "labelBeer": "Beer",
+  "@labelBeer": { "description": "Beer drink type" },
+  
+  "labelWine": "Wine",
+  "@labelWine": { "description": "Wine drink type" },
+  
+  "labelNotes": "Notes",
+  "@labelNotes": { "description": "Notes section header" },
+  
+  "labelAbout": "About",
+  "@labelAbout": { "description": "About section header" },
+  
+  "labelContact": "Contact",
+  "@labelContact": { "description": "Contact section header" },
+  
+  "msgOops": "Oops!",
+  "@msgOops": { "description": "Error state title" },
+  
+  "msgNoHappyHoursNow": "No happy hours right now",
+  "@msgNoHappyHoursNow": { "description": "Empty state when filtering for active happy hours" },
+  
+  "msgNoBarsFound": "No bars found",
+  "@msgNoBarsFound": { "description": "General empty state" },
+  
+  "msgCheckBackLater": "Check back later or view all bars",
+  "@msgCheckBackLater": { "description": "Suggestion text in empty state" },
+  
+  "msgPullToRefresh": "Pull down to refresh",
+  "@msgPullToRefresh": { "description": "Refresh hint text" },
+  
+  "locationEnable": "Enable location",
+  "@locationEnable": { "description": "Tooltip for location permission button" },
+  
+  "locationEnabled": "Location enabled",
+  "@locationEnabled": { "description": "Tooltip when location is active" },
+  
+  "distanceMeters": "{distance}m",
+  "@distanceMeters": {
+    "description": "Distance formatted in meters",
+    "placeholders": {
+      "distance": { "type": "int", "example": "500" }
+    }
+  },
+  
+  "distanceKilometers": "{distance}km",
+  "@distanceKilometers": {
+    "description": "Distance formatted in kilometers",
+    "placeholders": {
+      "distance": { "type": "String", "example": "1.5" }
+    }
+  }
+}
+

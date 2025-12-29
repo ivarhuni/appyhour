@@ -78,7 +78,7 @@ Clean Architecture with four layers:
 lib/
 ├── presentation/     # UI: Screens, Widgets, Cubits
 ├── application/      # Use cases, application logic
-├── domain/           # Entities, Repository interfaces, Value objects
+├── domain/           # Entities, Repository interfaces
 └── infrastructure/   # API clients, Repository implementations
 ```
 

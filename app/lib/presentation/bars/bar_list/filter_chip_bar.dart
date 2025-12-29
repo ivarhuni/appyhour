@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:happyhour_app/domain/bars/enums/filter_mode.dart';
+import 'package:happyhour_app/gen_l10n/app_localizations.dart';
 
 /// A filter chip bar for toggling between ALL and ONGOING filter modes.
 class FilterChipBar extends StatelessWidget {
@@ -14,13 +15,14 @@ class FilterChipBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
           _buildChip(
             context,
-            label: 'All',
+            label: l10n.filterAll,
             icon: Icons.list,
             isSelected: selectedMode == FilterMode.all,
             onTap: () => onFilterChanged(FilterMode.all),
@@ -28,7 +30,7 @@ class FilterChipBar extends StatelessWidget {
           const SizedBox(width: 8),
           _buildChip(
             context,
-            label: 'Happy Hour Now',
+            label: l10n.filterHappyHourNow,
             icon: Icons.local_fire_department,
             isSelected: selectedMode == FilterMode.ongoing,
             onTap: () => onFilterChanged(FilterMode.ongoing),

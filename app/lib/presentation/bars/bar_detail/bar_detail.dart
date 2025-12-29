@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:happyhour_app/application/bars/bar_detail/bar_detail_cubit.dart';
 import 'package:happyhour_app/application/bars/bar_detail/bar_detail_state.dart';
 import 'package:happyhour_app/domain/bars/entities/bar.dart';
+import 'package:happyhour_app/gen_l10n/app_localizations.dart';
 import 'package:happyhour_app/presentation/bars/bar_detail/bar_map.dart';
 
 /// Screen displaying detailed information about a single bar.
@@ -39,6 +40,7 @@ class BarDetail extends StatelessWidget {
 
   Widget _buildErrorState(BuildContext context, String message) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return SafeArea(
       child: Column(
@@ -68,7 +70,7 @@ class BarDetail extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Oops!',
+                      l10n.msgOops,
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -85,7 +87,7 @@ class BarDetail extends StatelessWidget {
                     FilledButton.icon(
                       onPressed: () => context.read<BarDetailCubit>().loadBar(),
                       icon: const Icon(Icons.refresh),
-                      label: const Text('Try Again'),
+                      label: Text(l10n.actionTryAgain),
                     ),
                   ],
                 ),
@@ -99,6 +101,7 @@ class BarDetail extends StatelessWidget {
 
   Widget _buildLoadedState(BuildContext context, Bar bar, bool isActive) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context);
 
     return CustomScrollView(
       slivers: [
@@ -161,7 +164,7 @@ class BarDetail extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              'HAPPY HOUR',
+                              l10n.labelHappyHour,
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: theme.colorScheme.onPrimary,
                                 fontWeight: FontWeight.bold,
@@ -192,7 +195,7 @@ class BarDetail extends StatelessWidget {
 
                 // Prices section
                 Text(
-                  'Happy Hour Prices',
+                  l10n.labelHappyHourPrices,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -204,7 +207,7 @@ class BarDetail extends StatelessWidget {
                       child: _buildPriceCard(
                         context,
                         Icons.sports_bar,
-                        'Beer',
+                        l10n.labelBeer,
                         '${bar.cheapestBeerPrice} kr',
                         theme.colorScheme.primaryContainer,
                       ),
@@ -214,7 +217,7 @@ class BarDetail extends StatelessWidget {
                       child: _buildPriceCard(
                         context,
                         Icons.wine_bar,
-                        'Wine',
+                        l10n.labelWine,
                         '${bar.cheapestWinePrice} kr',
                         theme.colorScheme.secondaryContainer,
                       ),
@@ -238,7 +241,7 @@ class BarDetail extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          '2-for-1 deals available!',
+                          l10n.labelTwoForOneAvailable,
                           style: theme.textTheme.titleSmall?.copyWith(
                             color: theme.colorScheme.onTertiaryContainer,
                             fontWeight: FontWeight.bold,
@@ -253,7 +256,7 @@ class BarDetail extends StatelessWidget {
                 // Notes section
                 if (bar.notes.isNotEmpty) ...[
                   Text(
-                    'Notes',
+                    l10n.labelNotes,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -277,7 +280,7 @@ class BarDetail extends StatelessWidget {
                 // Description section
                 if (bar.description != null && bar.description!.isNotEmpty) ...[
                   Text(
-                    'About',
+                    l10n.labelAbout,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -294,7 +297,7 @@ class BarDetail extends StatelessWidget {
 
                 // Contact
                 Text(
-                  'Contact',
+                  l10n.labelContact,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:happyhour_app/domain/bars/entities/bar.dart';
+import 'package:happyhour_app/gen_l10n/app_localizations.dart';
 
 /// A list item widget displaying bar summary information.
 class BarListItem extends StatelessWidget {
@@ -55,7 +56,7 @@ class BarListItem extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        'HAPPY HOUR',
+                        AppLocalizations.of(context).labelHappyHour,
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: theme.colorScheme.onPrimary,
                           fontWeight: FontWeight.bold,
@@ -111,7 +112,7 @@ class BarListItem extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        '2-for-1',
+                        AppLocalizations.of(context).labelTwoForOne,
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: theme.colorScheme.onTertiaryContainer,
                           fontWeight: FontWeight.bold,
@@ -145,7 +146,7 @@ class BarListItem extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      _formatDistance(bar.distanceFromUser!),
+                      _formatDistance(context, bar.distanceFromUser!),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -188,11 +189,12 @@ class BarListItem extends StatelessWidget {
     );
   }
 
-  String _formatDistance(double meters) {
+  String _formatDistance(BuildContext context, double meters) {
+    final l10n = AppLocalizations.of(context);
     if (meters < 1000) {
-      return '${meters.round()}m';
+      return l10n.distanceMeters(meters.round());
     } else {
-      return '${(meters / 1000).toStringAsFixed(1)}km';
+      return l10n.distanceKilometers((meters / 1000).toStringAsFixed(1));
     }
   }
 }

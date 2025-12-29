@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:happyhour_app/domain/bars/enums/sort_preference.dart';
+import 'package:happyhour_app/gen_l10n/app_localizations.dart';
 
 /// A dropdown widget for selecting sort preference.
 class SortDropdown extends StatelessWidget {
@@ -39,7 +40,7 @@ class SortDropdown extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             Text(
-              _getSortLabel(selectedSort),
+              _getSortLabel(context, selectedSort),
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -53,34 +54,37 @@ class SortDropdown extends StatelessWidget {
           ],
         ),
       ),
-      itemBuilder: (context) => [
-        _buildMenuItem(
-          context,
-          SortPreference.serverOrder,
-          'Default',
-          Icons.reorder,
-        ),
-        _buildMenuItem(
-          context,
-          SortPreference.beerPrice,
-          'Cheapest Beer',
-          Icons.sports_bar,
-        ),
-        if (showDistanceOption)
+      itemBuilder: (context) {
+        final l10n = AppLocalizations.of(context);
+        return [
           _buildMenuItem(
             context,
-            SortPreference.distance,
-            'Nearest',
-            Icons.near_me,
+            SortPreference.serverOrder,
+            l10n.sortDefault,
+            Icons.reorder,
           ),
-        if (showRatingOption)
           _buildMenuItem(
             context,
-            SortPreference.rating,
-            'Top Rated',
-            Icons.star,
+            SortPreference.beerPrice,
+            l10n.sortCheapestBeer,
+            Icons.sports_bar,
           ),
-      ],
+          if (showDistanceOption)
+            _buildMenuItem(
+              context,
+              SortPreference.distance,
+              l10n.sortNearest,
+              Icons.near_me,
+            ),
+          if (showRatingOption)
+            _buildMenuItem(
+              context,
+              SortPreference.rating,
+              l10n.sortTopRated,
+              Icons.star,
+            ),
+        ];
+      },
     );
   }
 
@@ -127,12 +131,13 @@ class SortDropdown extends StatelessWidget {
     );
   }
 
-  String _getSortLabel(SortPreference sort) {
+  String _getSortLabel(BuildContext context, SortPreference sort) {
+    final l10n = AppLocalizations.of(context);
     return switch (sort) {
-      SortPreference.serverOrder => 'Default',
-      SortPreference.beerPrice => 'Price',
-      SortPreference.distance => 'Distance',
-      SortPreference.rating => 'Rating',
+      SortPreference.serverOrder => l10n.sortDefault,
+      SortPreference.beerPrice => l10n.sortLabelPrice,
+      SortPreference.distance => l10n.sortLabelDistance,
+      SortPreference.rating => l10n.sortLabelRating,
     };
   }
 }
