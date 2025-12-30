@@ -1,268 +1,57 @@
-# UI Design Agent - HappyHour Flutter App
+# Presentation Layer — Coding Standards
 
-You are an expert Flutter UI/UX designer with deep expertise in:
-- Material Design 3 and custom theming
-- Implicit and explicit animations (AnimatedContainer, Hero, FadeTransition, AnimatedOpacity)
-- Color theory: dark themes with vibrant accent gradients
-- Organic/fluid layouts using curves, clip paths, and circular elements
-- Micro-interactions that delight users without overwhelming
+Inherits all design system guidelines from the root `app/.cursorrules`.
 
-## Project Context
+This file focuses on **code conventions** for the presentation layer.
 
-- **Types** (classes, enums, typedefs): `UpperCamelCase`
-- **Extensions**: `UpperCamelCase`
-- **Packages, directories, files**: `lowercase_with_underscores`
-- **Import prefixes**: `lowercase_with_underscores`
-- **Variables, functions, parameters**: `lowerCamelCase`
-- **Constants**: `lowerCamelCase` (NOT `SCREAMING_CAPS` or `kPrefixed`)
-- **Acronyms 3+ letters**: Capitalize like words (`HttpRequest`, `Id`)
-- **Unused callback params**: Use wildcard `_`
-- **DON'T** use leading underscore except for private members
-- **DON'T** use Hungarian notation prefixes (`k`, `m`, `s`)
-- **DON'T** explicitly name libraries
+## Naming Conventions
 
-## Design System
+| Element                        | Style                        | Example                    |
+|--------------------------------|------------------------------|----------------------------|
+| Classes, enums, typedefs       | `UpperCamelCase`             | `BarListItem`, `FilterMode`|
+| Extensions                     | `UpperCamelCase`             | `StringExtension`          |
+| Files and directories          | `lowercase_with_underscores` | `bar_list_item.dart`       |
+| Variables, functions, params   | `lowerCamelCase`             | `isHappyHourActive`        |
+| Constants                      | `lowerCamelCase`             | `defaultPadding`           |
+| Acronyms (3+ letters)          | Capitalize like words        | `HttpRequest`, `barId`     |
 
-### Color Palette (Dark/Red)
+## Code Patterns
+
+### Widget Structure
 
 ```dart
-// Core palette
-static const Color background = Color(0xFF0D0D0D);        // Near black
-static const Color backgroundGradientEnd = Color(0xFF1A1A1A);
-static const Color surface = Color(0xFF1E1E1E);           // Cards, containers
-static const Color surfaceVariant = Color(0xFF2A2020);    // Subtle red undertone
+class BarListItem extends StatelessWidget {
+  final Bar bar;           // Required params first
+  final VoidCallback? onTap;  // Optional params after
 
-// Primary reds
-static const Color primary = Color(0xFFC62828);           // Deep red
-static const Color primaryLight = Color(0xFFE53935);      // Brighter red
-static const Color secondary = Color(0xFFFF5252);         // Vibrant accent
+  const BarListItem({
+    super.key,
+    required this.bar,
+    this.onTap,
+  });
 
-// Semantic colors
-static const Color success = Color(0xFF4CAF50);           // Happy hour active
-static const Color warning = Color(0xFFFFB74D);           // Ending soon
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);  // Access theme first
+    final l10n = AppLocalizations.of(context);  // Then localization
 
-// Text
-static const Color textPrimary = Color(0xFFFAFAFA);       // High emphasis
-static const Color textSecondary = Color(0xFFB0B0B0);     // Medium emphasis
-static const Color textDisabled = Color(0xFF757575);      // Low emphasis
+    return /* widget tree */;
+  }
+}
 ```
-
-### Typography
-
-Use Google Fonts for distinctive typography:
-- **Display/Headlines**: `Playfair Display` or `Cormorant Garamond` - elegant, bar menu feel
-- **Body/Labels**: `DM Sans` or `Plus Jakarta Sans` - clean, modern readability
-- **Prices/Numbers**: `Space Mono` or `JetBrains Mono` - technical, precise
-
-### Shape Language
-
-1. **Images**: Always circular with subtle outer glow
-   ```dart
-   Container(
-     decoration: BoxDecoration(
-       shape: BoxShape.circle,
-       boxShadow: [
-         BoxShadow(
-           color: AppColors.primary.withOpacity(0.3),
-           blurRadius: 12,
-           spreadRadius: 2,
-         ),
-       ],
-     ),
-     child: CircleAvatar(radius: 32, backgroundImage: ...),
-   )
-   ```
-
-2. **Cards**: Large radius (24px+), gradient backgrounds, no harsh borders
-   ```dart
-   Container(
-     decoration: BoxDecoration(
-       borderRadius: BorderRadius.circular(24),
-       gradient: LinearGradient(
-         begin: Alignment.topLeft,
-         end: Alignment.bottomRight,
-         colors: [
-           AppColors.surface,
-           AppColors.surfaceVariant,
-         ],
-       ),
-     ),
-   )
-   ```
-
-3. **Chips/Pills**: Fully rounded (stadium shape)
-   ```dart
-   borderRadius: BorderRadius.circular(999)
-   ```
-
-4. **Asymmetric interest**: Occasionally use different radii per corner
-   ```dart
-   BorderRadius.only(
-     topLeft: Radius.circular(32),
-     topRight: Radius.circular(8),
-     bottomLeft: Radius.circular(8),
-     bottomRight: Radius.circular(32),
-   )
-   ```
-
-### Animation Guidelines
-
-1. **Page Transitions**: Combine slide + fade for smoothness
-   ```dart
-   GoRouter(
-     routes: [...],
-     pageBuilder: (context, state, child) => CustomTransitionPage(
-       transitionDuration: Duration(milliseconds: 300),
-       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-         return FadeTransition(
-           opacity: animation,
-           child: SlideTransition(
-             position: Tween<Offset>(
-               begin: Offset(0.05, 0),
-               end: Offset.zero,
-             ).animate(CurvedAnimation(
-               parent: animation,
-               curve: Curves.easeOutCubic,
-             )),
-             child: child,
-           ),
-         );
-       },
-       child: child,
-     ),
-   )
-   ```
-
-2. **List Items**: Staggered fade-in with slide
-   ```dart
-   AnimatedOpacity(
-     opacity: _visible ? 1.0 : 0.0,
-     duration: Duration(milliseconds: 300),
-     child: SlideTransition(
-       position: Tween<Offset>(
-         begin: Offset(0, 0.1),
-         end: Offset.zero,
-       ).animate(_controller),
-       child: child,
-     ),
-   )
-   ```
-   Use `Future.delayed(Duration(milliseconds: index * 50))` for stagger.
-
-3. **Tap Feedback**: Scale + glow pulse
-   ```dart
-   GestureDetector(
-     onTapDown: (_) => _controller.forward(),
-     onTapUp: (_) => _controller.reverse(),
-     onTapCancel: () => _controller.reverse(),
-     child: AnimatedBuilder(
-       animation: _controller,
-       builder: (context, child) => Transform.scale(
-         scale: 1.0 - (_controller.value * 0.02), // Subtle press-in
-         child: child,
-       ),
-     ),
-   )
-   ```
-
-4. **Hero Animations**: For bar images between list and detail
-   ```dart
-   Hero(
-     tag: 'bar-image-${bar.id}',
-     child: CircleAvatar(...),
-   )
-   ```
-
-5. **Micro-interactions**:
-   - Filter chips: `AnimatedContainer` for color/size changes
-   - Active indicator: Pulsing glow using `AnimatedOpacity` in loop
-   - Price tags: Subtle bounce on appear
-
-### Shadows and Depth
-
-Avoid harsh drop shadows. Use:
-
-1. **Ambient glow** (primary color, very soft):
-   ```dart
-   BoxShadow(
-     color: AppColors.primary.withOpacity(0.15),
-     blurRadius: 24,
-     spreadRadius: 0,
-   )
-   ```
-
-2. **Elevation simulation** (subtle, dark):
-   ```dart
-   BoxShadow(
-     color: Colors.black.withOpacity(0.3),
-     blurRadius: 8,
-     offset: Offset(0, 4),
-   )
-   ```
-
-3. **Inner glow** for active states:
-   ```dart
-   BoxDecoration(
-     gradient: RadialGradient(
-       colors: [
-         AppColors.primary.withOpacity(0.1),
-         Colors.transparent,
-       ],
-     ),
-   )
-   ```
-
-### Component Patterns
-
-#### List Item Card
-```
-┌─────────────────────────────────────────┐
-│  ○ Image    Bar Name           [LIVE] │
-│             Street Address             │
-│             ─────────────────────────  │
-│             🍺 990kr  🍷 1200kr  2FOR1 │
-│             Mon-Fri • 16:00-19:00      │
-└─────────────────────────────────────────┘
-```
-- Circular image on left with red glow when active
-- Gradient background (darker at bottom)
-- Price chips with icon + value
-
-#### Detail Screen Header
-```
-    ╭──────────────────────╮
-   ╱  Curved clip path     ╲
-  ╱    with map/image       ╲
- ╱                           ╲
-─────────────────────────────────
-     Bar Name    [HAPPY HOUR]
-```
-- Use `ClipPath` with custom curve for organic shape
-- Parallax scroll effect on header image
 
 ### Avoid
 
-- Pure rectangular cards (always round corners)
-- White backgrounds (always dark)
-- System fonts (use custom typography)
-- Hard shadows (use soft glows)
-- Static layouts without any animation
-- Over-animation (keep it refined, not flashy)
-- Pure black (#000000) - always use near-black with warmth
+- ❌ Leading underscores for non-private members
+- ❌ Hungarian notation (`kValue`, `mVariable`, `sInstance`)
+- ❌ Explicit library names
+- ❌ `SCREAMING_CAPS` for constants
+- ❌ Unused callback parameters (use `_` wildcard)
 
-### File Structure
+### Prefer
 
-All presentation code lives in:
-- `lib/presentation/bars/bar_list/` - List view components
-- `lib/presentation/bars/bar_detail/` - Detail view components
-
-Theme configuration in:
-- `lib/main.dart` - `_buildTheme()` method
-
-### Testing the Design
-
-After changes:
-1. Run on dark mode system setting
-2. Test scroll performance (animations should be 60fps)
-3. Verify text contrast meets WCAG AA (4.5:1 minimum)
-4. Check that active happy hour states are immediately visible
+- ✅ `const` constructors where possible
+- ✅ Expression bodies for single-return methods
+- ✅ `final` for immutable local variables
+- ✅ Null-aware operators (`?.`, `??`, `??=`)
+- ✅ Collection literals over constructors

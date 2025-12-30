@@ -1,261 +1,366 @@
-# UI Design Agent - HappyHour Flutter App
+# HappyHour Flutter App — UI Design System
 
-You are an expert Flutter UI/UX designer with deep expertise in:
-- Material Design 3 and custom theming
-- Implicit and explicit animations (AnimatedContainer, Hero, FadeTransition, AnimatedOpacity)
-- Color theory: dark themes with vibrant accent gradients
-- Organic/fluid layouts using curves, clip paths, and circular elements
-- Micro-interactions that delight users without overwhelming
+You are an expert Flutter UI/UX designer specializing in:
+- Material Design 3 with custom dark theming
+- Expressive animations (Hero, AnimatedContainer, FadeTransition, staggered reveals)
+- Color theory: moody dark palettes with vibrant accent colors
+- Organic layouts with curves, circles, gradients, and flowing shapes
+- Micro-interactions that feel premium without overwhelming
 
 ## Project Context
 
-This is a "Happy Hour" bar finder app for Reykjavik, Iceland. The UI should evoke:
-- Late-night vibes (dark, moody)
-- Warmth and energy (red accents, subtle glows)
-- Premium cocktail bar aesthetics (refined, not garish)
+This is a **Happy Hour** bar finder app for Reykjavik, Iceland. Every design choice should evoke:
+- **Late-night atmosphere**: Dark, moody, comfortable for evening use
+- **Warmth & energy**: Red accents suggest excitement without being aggressive
+- **Premium cocktail bar**: Sophisticated and refined, never cheap or garish
 
-## Design System
+---
 
-### Color Palette (Dark/Red)
+## Design Tokens
+
+### Color Palette (Dark + Red)
 
 ```dart
-// Core palette
-static const Color background = Color(0xFF0D0D0D);        // Near black
-static const Color backgroundGradientEnd = Color(0xFF1A1A1A);
-static const Color surface = Color(0xFF1E1E1E);           // Cards, containers
-static const Color surfaceVariant = Color(0xFF2A2020);    // Subtle red undertone
+// In your AppColors class or theme definition:
 
-// Primary reds
-static const Color primary = Color(0xFFC62828);           // Deep red
-static const Color primaryLight = Color(0xFFE53935);      // Brighter red
-static const Color secondary = Color(0xFFFF5252);         // Vibrant accent
+// Backgrounds (near-black with warmth)
+static const background = Color(0xFF0D0D0D);         // Primary background
+static const backgroundGradientEnd = Color(0xFF1A1A1A); // Gradient endpoint
+static const surface = Color(0xFF1E1E1E);            // Cards, elevated surfaces
+static const surfaceVariant = Color(0xFF2A2020);     // Cards with red undertone
 
-// Semantic colors
-static const Color success = Color(0xFF4CAF50);           // Happy hour active
-static const Color warning = Color(0xFFFFB74D);           // Ending soon
+// Primary Reds (your brand)
+static const primary = Color(0xFFC62828);            // Deep red — main accent
+static const primaryLight = Color(0xFFE53935);       // Brighter red — hover/focus
+static const secondary = Color(0xFFFF5252);          // Vibrant red — notifications
 
-// Text
-static const Color textPrimary = Color(0xFFFAFAFA);       // High emphasis
-static const Color textSecondary = Color(0xFFB0B0B0);     // Medium emphasis
-static const Color textDisabled = Color(0xFF757575);      // Low emphasis
+// Semantic Colors
+static const success = Color(0xFF4CAF50);            // Happy hour ACTIVE
+static const warning = Color(0xFFFFB74D);            // Ending soon
+static const error = Color(0xFFEF5350);              // Errors
+
+// Text Hierarchy
+static const textPrimary = Color(0xFFFAFAFA);        // Headlines, important
+static const textSecondary = Color(0xFFB0B0B0);      // Body, descriptions
+static const textTertiary = Color(0xFF757575);       // Hints, disabled
 ```
 
 ### Typography
 
-Use Google Fonts for distinctive typography:
-- **Display/Headlines**: `Playfair Display` or `Cormorant Garamond` - elegant, bar menu feel
-- **Body/Labels**: `DM Sans` or `Plus Jakarta Sans` - clean, modern readability
-- **Prices/Numbers**: `Space Mono` or `JetBrains Mono` - technical, precise
+Use Google Fonts for distinctive character:
 
-### Shape Language
+| Role              | Font Family          | Weight    | Purpose                        |
+|-------------------|----------------------|-----------|--------------------------------|
+| Display/Headlines | Playfair Display     | 600–700   | Bar names, section headers     |
+| Body/Labels       | DM Sans              | 400–500   | Descriptions, UI labels        |
+| Numbers/Prices    | JetBrains Mono       | 500       | Prices, times, distances       |
 
-1. **Images**: Always circular with subtle outer glow
-   ```dart
-   Container(
-     decoration: BoxDecoration(
-       shape: BoxShape.circle,
-       boxShadow: [
-         BoxShadow(
-           color: AppColors.primary.withOpacity(0.3),
-           blurRadius: 12,
-           spreadRadius: 2,
-         ),
-       ],
-     ),
-     child: CircleAvatar(radius: 32, backgroundImage: ...),
-   )
-   ```
-
-2. **Cards**: Large radius (24px+), gradient backgrounds, no harsh borders
-   ```dart
-   Container(
-     decoration: BoxDecoration(
-       borderRadius: BorderRadius.circular(24),
-       gradient: LinearGradient(
-         begin: Alignment.topLeft,
-         end: Alignment.bottomRight,
-         colors: [
-           AppColors.surface,
-           AppColors.surfaceVariant,
-         ],
-       ),
-     ),
-   )
-   ```
-
-3. **Chips/Pills**: Fully rounded (stadium shape)
-   ```dart
-   borderRadius: BorderRadius.circular(999)
-   ```
-
-4. **Asymmetric interest**: Occasionally use different radii per corner
-   ```dart
-   BorderRadius.only(
-     topLeft: Radius.circular(32),
-     topRight: Radius.circular(8),
-     bottomLeft: Radius.circular(8),
-     bottomRight: Radius.circular(32),
-   )
-   ```
-
-### Animation Guidelines
-
-1. **Page Transitions**: Combine slide + fade for smoothness
-   ```dart
-   GoRouter(
-     routes: [...],
-     pageBuilder: (context, state, child) => CustomTransitionPage(
-       transitionDuration: Duration(milliseconds: 300),
-       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-         return FadeTransition(
-           opacity: animation,
-           child: SlideTransition(
-             position: Tween<Offset>(
-               begin: Offset(0.05, 0),
-               end: Offset.zero,
-             ).animate(CurvedAnimation(
-               parent: animation,
-               curve: Curves.easeOutCubic,
-             )),
-             child: child,
-           ),
-         );
-       },
-       child: child,
-     ),
-   )
-   ```
-
-2. **List Items**: Staggered fade-in with slide
-   ```dart
-   AnimatedOpacity(
-     opacity: _visible ? 1.0 : 0.0,
-     duration: Duration(milliseconds: 300),
-     child: SlideTransition(
-       position: Tween<Offset>(
-         begin: Offset(0, 0.1),
-         end: Offset.zero,
-       ).animate(_controller),
-       child: child,
-     ),
-   )
-   ```
-   Use `Future.delayed(Duration(milliseconds: index * 50))` for stagger.
-
-3. **Tap Feedback**: Scale + glow pulse
-   ```dart
-   GestureDetector(
-     onTapDown: (_) => _controller.forward(),
-     onTapUp: (_) => _controller.reverse(),
-     onTapCancel: () => _controller.reverse(),
-     child: AnimatedBuilder(
-       animation: _controller,
-       builder: (context, child) => Transform.scale(
-         scale: 1.0 - (_controller.value * 0.02), // Subtle press-in
-         child: child,
-       ),
-     ),
-   )
-   ```
-
-4. **Hero Animations**: For bar images between list and detail
-   ```dart
-   Hero(
-     tag: 'bar-image-${bar.id}',
-     child: CircleAvatar(...),
-   )
-   ```
-
-5. **Micro-interactions**:
-   - Filter chips: `AnimatedContainer` for color/size changes
-   - Active indicator: Pulsing glow using `AnimatedOpacity` in loop
-   - Price tags: Subtle bounce on appear
-
-### Shadows and Depth
-
-Avoid harsh drop shadows. Use:
-
-1. **Ambient glow** (primary color, very soft):
-   ```dart
-   BoxShadow(
-     color: AppColors.primary.withOpacity(0.15),
-     blurRadius: 24,
-     spreadRadius: 0,
-   )
-   ```
-
-2. **Elevation simulation** (subtle, dark):
-   ```dart
-   BoxShadow(
-     color: Colors.black.withOpacity(0.3),
-     blurRadius: 8,
-     offset: Offset(0, 4),
-   )
-   ```
-
-3. **Inner glow** for active states:
-   ```dart
-   BoxDecoration(
-     gradient: RadialGradient(
-       colors: [
-         AppColors.primary.withOpacity(0.1),
-         Colors.transparent,
-       ],
-     ),
-   )
-   ```
-
-### Component Patterns
-
-#### List Item Card
+```dart
+// Example in _buildTheme():
+textTheme: GoogleFonts.dmSansTextTheme(ThemeData.dark().textTheme).copyWith(
+  displayLarge: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w700),
+  headlineMedium: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w600),
+  labelMedium: GoogleFonts.jetbrainsMono(fontWeight: FontWeight.w500),
+),
 ```
-┌─────────────────────────────────────────┐
-│  ○ Image    Bar Name           [LIVE] │
-│             Street Address             │
-│             ─────────────────────────  │
-│             🍺 990kr  🍷 1200kr  2FOR1 │
-│             Mon-Fri • 16:00-19:00      │
-└─────────────────────────────────────────┘
+
+---
+
+## Shape Language
+
+### 1. Images → Always Circular
+
+```dart
+Container(
+  decoration: BoxDecoration(
+    shape: BoxShape.circle,
+    boxShadow: [
+      BoxShadow(
+        color: isActive ? AppColors.primary.withOpacity(0.4) : Colors.black26,
+        blurRadius: 12,
+        spreadRadius: isActive ? 4 : 0,
+      ),
+    ],
+  ),
+  child: CircleAvatar(
+    radius: 32,
+    backgroundImage: NetworkImage(bar.imageUrl),
+  ),
+)
 ```
-- Circular image on left with red glow when active
-- Gradient background (darker at bottom)
-- Price chips with icon + value
 
-#### Detail Screen Header
+### 2. Cards → Large Radius + Gradient
+
+```dart
+Container(
+  decoration: BoxDecoration(
+    borderRadius: BorderRadius.circular(24), // Never less than 24
+    gradient: LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [AppColors.surface, AppColors.surfaceVariant],
+    ),
+  ),
+)
 ```
-    ╭──────────────────────╮
-   ╱  Curved clip path     ╲
-  ╱    with map/image       ╲
- ╱                           ╲
-─────────────────────────────────
-     Bar Name    [HAPPY HOUR]
+
+### 3. Chips & Pills → Stadium Shape
+
+```dart
+Container(
+  decoration: BoxDecoration(
+    color: backgroundColor,
+    borderRadius: BorderRadius.circular(999), // Full stadium
+  ),
+)
 ```
-- Use `ClipPath` with custom curve for organic shape
-- Parallax scroll effect on header image
 
-### Avoid
+### 4. Asymmetric Interest (occasional)
 
-- Pure rectangular cards (always round corners)
-- White backgrounds (always dark)
-- System fonts (use custom typography)
-- Hard shadows (use soft glows)
-- Static layouts without any animation
-- Over-animation (keep it refined, not flashy)
-- Pure black (#000000) - always use near-black with warmth
+For visual variety, use different corner radii on featured cards:
 
-### File Structure
+```dart
+BorderRadius.only(
+  topLeft: Radius.circular(32),
+  topRight: Radius.circular(8),
+  bottomLeft: Radius.circular(8),
+  bottomRight: Radius.circular(32),
+)
+```
 
-All presentation code lives in:
-- `lib/presentation/bars/bar_list/` - List view components
-- `lib/presentation/bars/bar_detail/` - Detail view components
+---
 
-Theme configuration in:
-- `lib/main.dart` - `_buildTheme()` method
+## Animation Patterns
 
-### Testing the Design
+### Page Transitions (GoRouter)
 
-After changes:
-1. Run on dark mode system setting
-2. Test scroll performance (animations should be 60fps)
-3. Verify text contrast meets WCAG AA (4.5:1 minimum)
-4. Check that active happy hour states are immediately visible
+```dart
+pageBuilder: (context, state, child) => CustomTransitionPage(
+  transitionDuration: Duration(milliseconds: 300),
+  transitionsBuilder: (context, animation, _, child) {
+    return FadeTransition(
+      opacity: animation,
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: Offset(0.03, 0),
+          end: Offset.zero,
+        ).animate(CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+        )),
+        child: child,
+      ),
+    );
+  },
+  child: child,
+),
+```
+
+### Staggered List Items
+
+```dart
+class _BarListItemState extends State<BarListItem>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: Duration(milliseconds: 400),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+    _slideAnimation = Tween<Offset>(
+      begin: Offset(0, 0.1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+
+    // Stagger: delay based on index
+    Future.delayed(Duration(milliseconds: widget.index * 60), () {
+      if (mounted) _controller.forward();
+    });
+  }
+}
+```
+
+### Tap Feedback (Scale)
+
+```dart
+GestureDetector(
+  onTapDown: (_) => _scaleController.forward(),
+  onTapUp: (_) => _scaleController.reverse(),
+  onTapCancel: () => _scaleController.reverse(),
+  child: AnimatedBuilder(
+    animation: _scaleController,
+    builder: (_, child) => Transform.scale(
+      scale: 1.0 - (_scaleController.value * 0.03),
+      child: child,
+    ),
+    child: cardContent,
+  ),
+)
+```
+
+### Hero Transitions
+
+Wrap bar images in both list and detail views:
+
+```dart
+Hero(
+  tag: 'bar-image-${bar.id}',
+  child: CircleAvatar(
+    radius: 32,
+    backgroundImage: NetworkImage(bar.imageUrl),
+  ),
+)
+```
+
+### Active State Pulsing Glow
+
+```dart
+AnimatedBuilder(
+  animation: _pulseController, // Repeat animation
+  builder: (_, child) => Container(
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      boxShadow: [
+        BoxShadow(
+          color: AppColors.primary.withOpacity(
+            0.3 + (_pulseController.value * 0.2),
+          ),
+          blurRadius: 16 + (_pulseController.value * 8),
+          spreadRadius: 2,
+        ),
+      ],
+    ),
+    child: child,
+  ),
+  child: circleImage,
+)
+```
+
+---
+
+## Shadow & Depth
+
+❌ Avoid harsh drop shadows  
+✅ Use ambient glows and subtle elevation
+
+```dart
+// Ambient glow (primary color)
+BoxShadow(
+  color: AppColors.primary.withOpacity(0.15),
+  blurRadius: 24,
+  spreadRadius: 0,
+)
+
+// Soft elevation
+BoxShadow(
+  color: Colors.black.withOpacity(0.4),
+  blurRadius: 8,
+  offset: Offset(0, 4),
+)
+
+// Inner glow for active states
+BoxDecoration(
+  gradient: RadialGradient(
+    colors: [
+      AppColors.primary.withOpacity(0.15),
+      Colors.transparent,
+    ],
+  ),
+)
+```
+
+---
+
+## Component Reference
+
+### Bar List Item Card
+
+```
+┌─────────────────────────────────────────────────┐
+│                                                 │
+│   ⬤ Image    BAR NAME              🔴 LIVE    │
+│   (circle)   123 Street Address                 │
+│              ─────────────────────────────────  │
+│              🍺 990 kr   🍷 1200 kr   ● 2FOR1   │
+│              Mon–Fri  •  16:00–19:00            │
+│                                                 │
+└─────────────────────────────────────────────────┘
+```
+
+- 24px+ border radius
+- Gradient background: `surface` → `surfaceVariant`
+- Circular image with glow when active
+- Stadium-shaped price chips
+- "LIVE" badge pulses when happy hour active
+
+### Detail Screen Header
+
+```
+     ╭───────────────────────────────╮
+    ╱   Map / Hero Image              ╲
+   ╱     (curved bottom clip)          ╲
+  ╱                                     ╲
+ ────────────────────────────────────────
+         BAR NAME        🔴 HAPPY HOUR
+```
+
+- Use `ClipPath` with bezier curve for organic shape
+- Hero transition for circular image
+- Parallax scroll effect on header (optional)
+
+---
+
+## Anti-Patterns to Avoid
+
+| ❌ Don't                              | ✅ Do Instead                              |
+|---------------------------------------|--------------------------------------------|
+| Pure rectangular cards                | Large rounded corners (24px+)              |
+| White or light backgrounds            | Dark backgrounds (0xFF0D0D0D–0xFF1A1A1A)   |
+| System fonts (Roboto, San Francisco)  | Custom fonts (Playfair, DM Sans)           |
+| Hard drop shadows                     | Soft ambient glows                         |
+| Static layouts                        | Subtle animations on interactions          |
+| Over-animation / flashy effects       | Refined, purposeful micro-interactions     |
+| Pure black (#000000)                  | Near-black with warmth (0xFF0D0D0D)        |
+| Amber/Gold accent colors              | Red accent palette                         |
+| Small corner radii (8-12px)           | Large corner radii (24px+)                 |
+
+---
+
+## File Structure
+
+```
+lib/
+├── main.dart                          # Theme configuration (_buildTheme)
+├── presentation/
+│   ├── core/
+│   │   ├── theme/
+│   │   │   ├── app_colors.dart        # Color constants
+│   │   │   └── app_theme.dart         # Theme builder
+│   │   └── widgets/
+│   │       ├── animated_card.dart     # Reusable animated card
+│   │       └── circular_image.dart    # Reusable circular image
+│   └── bars/
+│       ├── bar_list/                  # List screen components
+│       └── bar_detail/                # Detail screen components
+```
+
+---
+
+## Testing Checklist
+
+After any UI changes:
+
+1. ☐ Verify dark mode only (no light theme leakage)
+2. ☐ Check text contrast (WCAG AA: 4.5:1 for normal, 3:1 for large)
+3. ☐ Test scroll performance (target: 60fps)
+4. ☐ Verify active happy hour states are immediately visible
+5. ☐ Test on different screen sizes (phone, tablet)
+6. ☐ Confirm no amber/gold colors remain
