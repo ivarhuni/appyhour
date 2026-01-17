@@ -11,6 +11,8 @@ import 'package:happyhour_app/presentation/bars/bar_list/bar_list_item.dart';
 import 'package:happyhour_app/presentation/bars/bar_list/error_banner.dart';
 import 'package:happyhour_app/presentation/bars/bar_list/filter_chip_bar.dart';
 import 'package:happyhour_app/presentation/bars/bar_list/sort_dropdown.dart';
+import 'package:happyhour_app/presentation/core/brand/brand.dart';
+import 'package:happyhour_app/presentation/core/widgets/widgets.dart';
 
 /// Main screen displaying a scrollable list of bars.
 class BarList extends StatefulWidget {
@@ -64,18 +66,21 @@ class _BarListState extends State<BarList> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
+    final brand = BrandProvider.of(context);
+    final colors = brand.colors;
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: colors.background,
       appBar: AppBar(
-        title: Text(l10n.appTitle),
+        title: ResponsiveBrandLogo(
+          maxHeight: 32,
+          colorFilter: colors.textPrimary,
+        ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor: theme.colorScheme.surface,
-        foregroundColor: theme.colorScheme.onSurface,
+        backgroundColor: colors.background,
+        foregroundColor: colors.textPrimary,
         actions: [
           if (!_hasLocationPermission)
             IconButton(
@@ -94,11 +99,11 @@ class _BarListState extends State<BarList> {
       body: BlocBuilder<BarListCubit, BarListState>(
         builder: (context, state) {
           return switch (state) {
-            BarListInitial() => const Center(
-              child: CircularProgressIndicator(),
+            BarListInitial() => Center(
+              child: CircularProgressIndicator(color: colors.primary),
             ),
-            BarListLoading() => const Center(
-              child: CircularProgressIndicator(),
+            BarListLoading() => Center(
+              child: CircularProgressIndicator(color: colors.primary),
             ),
             BarListError(:final message) => _buildErrorState(context, message),
             BarListLoaded() => _buildLoadedState(context, state),
@@ -110,6 +115,7 @@ class _BarListState extends State<BarList> {
 
   Widget _buildErrorState(BuildContext context, String message) {
     final theme = Theme.of(context);
+    final colors = BrandProvider.of(context).colors;
     final l10n = AppLocalizations.of(context);
 
     return Center(
@@ -121,7 +127,7 @@ class _BarListState extends State<BarList> {
             Icon(
               Icons.error_outline,
               size: 64,
-              color: theme.colorScheme.error,
+              color: colors.error,
             ),
             const SizedBox(height: 16),
             Text(
@@ -224,6 +230,7 @@ class _BarListState extends State<BarList> {
 
   Widget _buildEmptyState(BuildContext context, FilterMode filterMode) {
     final theme = Theme.of(context);
+    final colors = BrandProvider.of(context).colors;
     final l10n = AppLocalizations.of(context);
     final isFiltered = filterMode == FilterMode.ongoing;
 
@@ -236,7 +243,7 @@ class _BarListState extends State<BarList> {
             Icon(
               isFiltered ? Icons.access_time : Icons.sports_bar_outlined,
               size: 64,
-              color: theme.colorScheme.primary.withValues(alpha: 0.5),
+              color: colors.primary.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             Text(

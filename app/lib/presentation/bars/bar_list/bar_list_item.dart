@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:happyhour_app/domain/bars/entities/bar.dart';
 import 'package:happyhour_app/gen_l10n/app_localizations.dart';
-import 'package:happyhour_app/presentation/core/theme/theme.dart';
+import 'package:happyhour_app/presentation/core/brand/brand.dart';
 import 'package:happyhour_app/presentation/core/widgets/animated_card.dart';
 import 'package:happyhour_app/presentation/core/widgets/circular_bar_image.dart';
 
@@ -84,6 +84,9 @@ class _BarListItemState extends State<BarListItem>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final brand = BrandProvider.of(context);
+    final colors = brand.colors;
+    final typography = brand.typography;
     final l10n = AppLocalizations.of(context);
     final isActive = widget.bar.isHappyHourActive();
     final radius = _getResponsiveRadius(context);
@@ -114,7 +117,7 @@ class _BarListItemState extends State<BarListItem>
                     Expanded(
                       child: Text(
                         widget.bar.name,
-                        style: AppTypography.barName,
+                        style: typography.barName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -126,18 +129,18 @@ class _BarListItemState extends State<BarListItem>
                           vertical: 5,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.primary,
+                          color: colors.primary,
                           borderRadius: BorderRadius.circular(999),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.4),
+                              color: colors.primary.withValues(alpha: 0.4),
                               blurRadius: 8,
                             ),
                           ],
                         ),
                         child: Text(
                           l10n.labelHappyHour,
-                          style: AppTypography.badge,
+                          style: typography.badge,
                         ),
                       ),
                   ],
@@ -146,17 +149,17 @@ class _BarListItemState extends State<BarListItem>
                 // Address row
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.location_on_outlined,
                       size: 14,
-                      color: AppColors.textTertiary,
+                      color: colors.textTertiary,
                     ),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         widget.bar.street,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
+                          color: colors.textSecondary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -171,19 +174,22 @@ class _BarListItemState extends State<BarListItem>
                   runSpacing: 6,
                   children: [
                     _buildPriceChip(
+                      context,
                       Icons.sports_bar,
                       '${widget.bar.cheapestBeerPrice} kr',
-                      AppColors.primaryContainer,
+                      colors.primaryContainer,
                     ),
                     _buildPriceChip(
+                      context,
                       Icons.wine_bar,
                       '${widget.bar.cheapestWinePrice} kr',
-                      AppColors.surfaceHigh,
+                      colors.surfaceHigh,
                     ),
                     if (widget.bar.twoForOne)
                       _buildSpecialChip(
+                        context,
                         l10n.labelTwoForOne,
-                        AppColors.success,
+                        colors.success,
                       ),
                   ],
                 ),
@@ -191,33 +197,33 @@ class _BarListItemState extends State<BarListItem>
                 // Time and distance row
                 Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.access_time,
                       size: 14,
-                      color: AppColors.textTertiary,
+                      color: colors.textTertiary,
                     ),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         '${widget.bar.happyHourDays.displayString} • ${widget.bar.happyHourTime.displayString}',
-                        style: AppTypography.data.copyWith(
-                          color: AppColors.textTertiary,
+                        style: typography.data.copyWith(
+                          color: colors.textTertiary,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     if (widget.bar.distanceFromUser != null) ...[
-                      const Icon(
+                      Icon(
                         Icons.directions_walk,
                         size: 14,
-                        color: AppColors.textTertiary,
+                        color: colors.textTertiary,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         _formatDistance(widget.bar.distanceFromUser!),
-                        style: AppTypography.data.copyWith(
-                          color: AppColors.textSecondary,
+                        style: typography.data.copyWith(
+                          color: colors.textSecondary,
                         ),
                       ),
                     ],
@@ -241,7 +247,16 @@ class _BarListItemState extends State<BarListItem>
   }
 
   /// Stadium-shaped price chip (FR-006)
-  Widget _buildPriceChip(IconData icon, String label, Color backgroundColor) {
+  Widget _buildPriceChip(
+    BuildContext context,
+    IconData icon,
+    String label,
+    Color backgroundColor,
+  ) {
+    final brand = BrandProvider.of(context);
+    final colors = brand.colors;
+    final typography = brand.typography;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
@@ -251,16 +266,22 @@ class _BarListItemState extends State<BarListItem>
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 14, color: AppColors.textPrimary),
+          Icon(icon, size: 14, color: colors.textPrimary),
           const SizedBox(width: 4),
-          Text(label, style: AppTypography.chip),
+          Text(label, style: typography.chip),
         ],
       ),
     );
   }
 
   /// Special badge chip for 2-for-1 deals
-  Widget _buildSpecialChip(String label, Color backgroundColor) {
+  Widget _buildSpecialChip(
+    BuildContext context,
+    String label,
+    Color backgroundColor,
+  ) {
+    final typography = BrandProvider.of(context).typography;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
@@ -272,7 +293,7 @@ class _BarListItemState extends State<BarListItem>
       ),
       child: Text(
         label,
-        style: AppTypography.chip.copyWith(color: backgroundColor),
+        style: typography.chip.copyWith(color: backgroundColor),
       ),
     );
   }

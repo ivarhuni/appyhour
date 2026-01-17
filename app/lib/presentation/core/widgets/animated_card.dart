@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:happyhour_app/presentation/core/theme/theme.dart';
+import 'package:happyhour_app/presentation/core/brand/brand.dart';
 
 class AnimatedCard extends StatefulWidget {
   final Widget child;
@@ -88,6 +88,8 @@ class _AnimatedCardState extends State<AnimatedCard>
 
   @override
   Widget build(BuildContext context) {
+    final colors = BrandProvider.of(context).colors;
+
     return AnimatedBuilder(
       animation: _scaleAnimation,
       builder: (context, child) =>
@@ -101,14 +103,14 @@ class _AnimatedCardState extends State<AnimatedCard>
           margin: widget.margin,
           decoration: BoxDecoration(
             borderRadius: _borderRadius,
-            gradient: widget.gradient ?? AppColors.cardGradient,
+            gradient: widget.gradient ?? colors.cardGradient,
             border: widget.isActive
-                ? Border.all(color: AppColors.primary, width: 2)
+                ? Border.all(color: colors.primary, width: 2)
                 : null,
             boxShadow: [
               if (widget.isActive)
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha: 0.3),
+                  color: colors.primary.withValues(alpha: 0.3),
                   blurRadius: 16,
                   spreadRadius: 2,
                 ),
