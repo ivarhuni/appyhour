@@ -9,8 +9,16 @@ import 'package:happyhour_app/infrastructure/bars/repository/bar_repository.dart
 import 'package:happyhour_app/infrastructure/bars/repository/i_bar_repository.dart';
 import 'package:happyhour_app/presentation/bars/bar_detail/bar_detail.dart';
 import 'package:happyhour_app/presentation/bars/bar_list/bar_list.dart';
+import 'package:happyhour_app/presentation/core/brand/brand.dart';
 import 'package:happyhour_app/presentation/core/navigation/app_page_transitions.dart';
 import 'package:happyhour_app/presentation/core/theme/theme.dart';
+
+/// The active brand for this build.
+///
+/// Change this value and rebuild to switch themes:
+/// - [AppBrand.defaultBrand] - "Happy Hour" dark-red theme
+/// - [AppBrand.grapevine] - "Appy Hour" teal/orange editorial theme
+const AppBrand kActiveBrand = AppBrand.grapevine;
 
 void main() {
   runApp(const HappyHourApp());
@@ -22,28 +30,36 @@ class HappyHourApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final barRepository = BarRepository();
+    final brandConfig = BrandConfig.forBrand(kActiveBrand);
+    final theme = AppTheme.fromBrand(
+      colors: brandConfig.colors,
+      typography: brandConfig.typography,
+    );
 
     return RepositoryProvider<IBarRepository>.value(
       value: barRepository,
-      child: MaterialApp.router(
-        title: 'Happy Hour',
-        debugShowCheckedModeBanner: false,
-        // Force dark mode only - no light theme
-        theme: AppTheme.darkTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.dark,
-        routerConfig: _router(barRepository),
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('en'),
-          Locale('is'),
-          Locale('pl'),
-        ],
+      child: BrandProvider(
+        config: brandConfig,
+        child: MaterialApp.router(
+          title: brandConfig.appName,
+          debugShowCheckedModeBanner: false,
+          // Force dark mode only - no light theme
+          theme: theme,
+          darkTheme: theme,
+          themeMode: ThemeMode.dark,
+          routerConfig: _router(barRepository),
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en'),
+            Locale('is'),
+            Locale('pl'),
+          ],
+        ),
       ),
     );
   }

@@ -1,0 +1,277 @@
+# AppyHour Repository Skills & Knowledge
+
+## Repository Information
+
+### Git Configuration
+- **Repository**: https://github.com/ivarhuni/appyhour.git
+- **Owner**: ivarhuni
+- **Status**: Active git repository with push access
+- **Remote**: origin (configured and accessible)
+- **Default Branch**: main
+
+### GitHub CLI
+- **Installed**: Yes (gh version 2.83.2, released 2025-12-10)
+- **Authenticated**: Yes (has push access)
+- **Location**: Available in PATH
+
+## Project Structure
+
+### Main Directories
+- `app/` - Flutter mobile application
+  - `lib/` - Dart source code (presentation, application, domain, infrastructure layers)
+  - `android/` - Android-specific configuration
+  - `ios/` - iOS-specific configuration
+  - `test/` - Unit and widget tests
+- `webservice/` - TypeScript web service
+- `specs/` - Project specifications and documentation
+- `skills/` - AI assistant skill definitions
+
+### Flutter App Structure (Clean Architecture)
+- **Domain Layer**: `lib/domain/` - Entities, repositories (interfaces)
+- **Application Layer**: `lib/application/` - Business logic (Cubits/BLoCs)
+- **Infrastructure Layer**: `lib/infrastructure/` - Data sources, DTOs
+- **Presentation Layer**: `lib/presentation/` - UI, widgets, themes
+
+## Development Environment
+
+### Windows-Specific (win32)
+- **Shell**: PowerShell (Visual Studio 2022 Developer PowerShell v17.14.3)
+- **Path Separator**: Backslash `\`
+- **Command Chaining**: Use semicolon `;` NOT `&&` for PowerShell
+- **String Pattern Matching**: Use `Select-String` instead of `grep`
+
+### Flutter/Android Build
+- **Gradle Properties**: `app/android/gradle.properties`
+- **Known Issues**: 
+  - Kotlin incremental compilation fails with cross-drive paths (C: vs D:)
+  - **Solution**: Added `kotlin.incremental=false` to gradle.properties
+- **Build Commands**: Run from `app/` directory
+- **Clean Build**: `flutter clean` then `flutter pub get`
+
+### Java/Kotlin Daemon Issues
+- If build fails with daemon/cache errors, kill Java processes:
+  ```powershell
+  taskkill /F /IM java.exe 2>$null
+  ```
+- Wait 2-3 seconds before rebuilding
+- May need to manually remove `app/build` and `app/android/.gradle` directories
+
+## Pull Request Workflow
+
+### Prerequisites (Always True - No Need to Check)
+1. ✅ Git repository is initialized
+2. ✅ GitHub remote is configured
+3. ✅ GitHub CLI (gh) is installed and authenticated
+4. ✅ User has push access to repository
+5. ✅ PowerShell is the active shell
+
+### Efficient PR Creation & Merge Process
+
+```powershell
+# 1. Check current branch and status
+git status
+
+# 2. Verify branch is pushed to remote (PowerShell syntax)
+git branch -r | Select-String '<branch-name>'
+
+# 3. Check for existing PR (skip if creating new)
+gh pr list --head <branch-name>
+
+# 4. Get commit summary for PR description
+git log --oneline main..<branch-name>
+
+# 5. Create PR with descriptive title and body
+gh pr create --base main --head <branch-name> --title "<Title>" --body "<Description>"
+
+# 6. Check merge status (returns JSON)
+gh pr view <pr-number> --json mergeable,mergeStateStatus
+# Expected: {"mergeStateStatus":"CLEAN","mergeable":"MERGEABLE"}
+
+# 7. If MERGEABLE, merge and delete branch
+gh pr merge <pr-number> --merge --delete-branch
+
+# 8. Verify merge completed
+gh pr view <pr-number> --json state,mergedAt,mergedBy
+# Expected: {"state":"MERGED", ...}
+
+# 9. Switch to main and pull changes
+git checkout main; git pull
+
+# 10. Clean up local branch (optional, ignores errors)
+git branch -d <branch-name> 2>$null
+```
+
+### PR JSON Fields Reference
+Available fields for `gh pr view --json`:
+- `state` - PR state (OPEN, MERGED, CLOSED)
+- `mergeable` - Can be merged (MERGEABLE, CONFLICTING, UNKNOWN)
+- `mergeStateStatus` - Detailed status (CLEAN, DIRTY, UNSTABLE, etc.)
+- `mergedAt` - Timestamp when merged
+- `mergedBy` - User who merged
+- `title`, `body`, `number`, `url`
+- `baseRefName`, `headRefName` - Branch names
+
+### Branch Naming Convention
+Pattern: `<number>-<descriptive-name>`
+Examples:
+- `001-csv-pages-automation`
+- `002-flutter-mobile-app`
+- `003-i18n-image-caching`
+- `004-dark-red-ui-revamp`
+
+### Spec Directory Structure
+```
+specs/<spec-number>-<spec-name>/
+  ├── spec.md              # Main specification
+  ├── plan.md              # Implementation plan
+  ├── tasks.md             # Task breakdown
+  ├── checklists/
+  │   └── requirements.md  # Requirements checklist
+  └── contracts/           # API contracts, schemas
+```
+
+## Common Commands & Shortcuts
+
+### Git Operations
+```powershell
+# Status check (always safe)
+git status
+
+# Branch operations
+git branch              # List local branches
+git branch -r           # List remote branches
+git branch -d <name>    # Delete local branch (safe)
+git branch -D <name>    # Force delete local branch
+
+# Checkout operations
+git checkout <branch>   # Switch branches
+git checkout -b <name>  # Create and switch to new branch
+
+# Sync operations
+git fetch              # Fetch from remote
+git pull               # Pull and merge
+git push               # Push to remote
+```
+
+### GitHub CLI Operations
+```powershell
+# PR operations
+gh pr list                              # List all PRs
+gh pr list --head <branch>              # List PRs for branch
+gh pr create [options]                  # Create PR
+gh pr view <number>                     # View PR details
+gh pr merge <number> [options]          # Merge PR
+gh pr status                            # Show PR status
+
+# Useful flags
+--json <fields>        # Output as JSON
+--base <branch>        # Target branch (usually 'main')
+--head <branch>        # Source branch
+--title "<text>"       # PR title
+--body "<text>"        # PR description
+--merge                # Use merge commit (not squash/rebase)
+--delete-branch        # Delete branch after merge
+```
+
+### Flutter Operations (from app/ directory)
+```powershell
+# Dependency management
+flutter pub get         # Install dependencies
+flutter pub upgrade     # Upgrade dependencies
+flutter pub outdated    # Check for updates
+
+# Build operations
+flutter clean           # Clean build artifacts
+flutter run             # Run on connected device
+flutter build apk       # Build Android APK
+flutter test            # Run tests
+
+# Device management
+flutter devices         # List available devices
+flutter emulators       # List available emulators
+```
+
+## Troubleshooting Quick Reference
+
+### Build Failures
+1. **Kotlin compilation errors**: Already fixed with `kotlin.incremental=false`
+2. **Gradle daemon issues**: Kill Java processes, clean, rebuild
+3. **Dependency issues**: `flutter clean; flutter pub get`
+4. **Path too long (Windows)**: Work from shorter paths or use subst
+
+### PR/Git Issues
+1. **"not a git repository"**: Already confirmed - not an issue
+2. **"permission denied"**: Already authenticated - not an issue
+3. **"gh command not found"**: Already installed - not an issue
+4. **Merge conflicts**: Check with `gh pr view <n> --json mergeable` before merging
+
+## Best Practices
+
+### Before Creating PR
+1. Ensure all commits are pushed: `git status`
+2. Verify branch naming follows convention
+3. Write descriptive commit messages
+4. Check for merge conflicts early
+
+### PR Description Template
+```
+Implementation of spec <number>: <title>
+
+Key changes:
+- <Change 1>
+- <Change 2>
+- <Change 3>
+
+Testing:
+- <Test scenario 1>
+- <Test scenario 2>
+```
+
+### After Merge
+1. Always switch to main and pull: `git checkout main; git pull`
+2. Clean up local branches: `git branch -d <old-branch>`
+3. Verify working tree is clean: `git status`
+
+## Time-Saving Assumptions
+
+When performing PR operations, you can safely assume:
+- ✅ Git is configured correctly
+- ✅ GitHub CLI is installed (v2.83.2+)
+- ✅ Repository remote is https://github.com/ivarhuni/appyhour.git
+- ✅ User has push/merge permissions
+- ✅ PowerShell is the shell (use `;` for command chaining)
+- ✅ Working directory is D:\dev\appyhour (or subdirectories)
+
+**Do not waste time checking these prerequisites.**
+
+## PowerShell-Specific Notes
+
+### Command Chaining
+```powershell
+# CORRECT (PowerShell)
+cd app; flutter clean; flutter pub get
+
+# WRONG (Bash syntax - will fail)
+cd app && flutter clean && flutter pub get
+```
+
+### Error Suppression
+```powershell
+# Suppress stderr
+command 2>$null
+
+# Suppress stdout
+command >$null
+
+# Suppress both
+command >$null 2>&1
+```
+
+### String Matching
+```powershell
+# CORRECT (PowerShell)
+git branch -r | Select-String 'pattern'
+
+# WRONG (Bash - not available)
+git branch -r | grep 'pattern'
+```

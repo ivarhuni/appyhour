@@ -6,7 +6,7 @@ import 'package:happyhour_app/application/bars/bar_detail/bar_detail_state.dart'
 import 'package:happyhour_app/domain/bars/entities/bar.dart';
 import 'package:happyhour_app/gen_l10n/app_localizations.dart';
 import 'package:happyhour_app/presentation/bars/bar_detail/bar_map.dart';
-import 'package:happyhour_app/presentation/core/theme/theme.dart';
+import 'package:happyhour_app/presentation/core/brand/brand.dart';
 import 'package:happyhour_app/presentation/core/widgets/circular_bar_image.dart';
 
 /// Screen displaying detailed information about a single bar.
@@ -24,16 +24,18 @@ class BarDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = BrandProvider.of(context).colors;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: colors.background,
       body: BlocBuilder<BarDetailCubit, BarDetailState>(
         builder: (context, state) {
           return switch (state) {
-            BarDetailInitial() => const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
+            BarDetailInitial() => Center(
+              child: CircularProgressIndicator(color: colors.primary),
             ),
-            BarDetailLoading() => const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
+            BarDetailLoading() => Center(
+              child: CircularProgressIndicator(color: colors.primary),
             ),
             BarDetailError(:final message) => _buildErrorState(
               context,
@@ -49,6 +51,7 @@ class BarDetail extends StatelessWidget {
 
   Widget _buildErrorState(BuildContext context, String message) {
     final theme = Theme.of(context);
+    final colors = BrandProvider.of(context).colors;
     final l10n = AppLocalizations.of(context);
 
     return SafeArea(
@@ -61,13 +64,13 @@ class BarDetail extends StatelessWidget {
                 IconButton(
                   icon: Container(
                     padding: const EdgeInsets.all(8),
-                    decoration: const BoxDecoration(
-                      color: AppColors.surface,
+                    decoration: BoxDecoration(
+                      color: colors.surface,
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.arrow_back,
-                      color: AppColors.textPrimary,
+                      color: colors.textPrimary,
                     ),
                   ),
                   onPressed: () => context.pop(),
@@ -82,17 +85,17 @@ class BarDetail extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.error_outline,
                       size: 64,
-                      color: AppColors.error,
+                      color: colors.error,
                     ),
                     const SizedBox(height: 16),
                     Text(
                       l10n.msgOops,
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: colors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -100,7 +103,7 @@ class BarDetail extends StatelessWidget {
                       message,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyLarge?.copyWith(
-                        color: AppColors.textSecondary,
+                        color: colors.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -121,6 +124,9 @@ class BarDetail extends StatelessWidget {
 
   Widget _buildLoadedState(BuildContext context, Bar bar, bool isActive) {
     final theme = Theme.of(context);
+    final brand = BrandProvider.of(context);
+    final colors = brand.colors;
+    final typography = brand.typography;
     final l10n = AppLocalizations.of(context);
     final imageRadius = _getDetailRadius(context);
 
@@ -129,12 +135,12 @@ class BarDetail extends StatelessWidget {
         SliverAppBar(
           expandedHeight: 220,
           pinned: true,
-          backgroundColor: AppColors.background,
+          backgroundColor: colors.background,
           leading: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.surface.withValues(alpha: 0.9),
+                color: colors.surface.withValues(alpha: 0.9),
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
@@ -144,7 +150,7 @@ class BarDetail extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+              child: Icon(Icons.arrow_back, color: colors.textPrimary),
             ),
             onPressed: () => context.pop(),
           ),
@@ -166,7 +172,7 @@ class BarDetail extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        AppColors.background.withValues(alpha: 0.8),
+                        colors.background.withValues(alpha: 0.8),
                       ],
                     ),
                   ),
@@ -202,7 +208,7 @@ class BarDetail extends StatelessWidget {
                               bar.name,
                               style: theme.textTheme.headlineMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
+                                color: colors.textPrimary,
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -218,11 +224,11 @@ class BarDetail extends StatelessWidget {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.primary,
+                              color: colors.primary,
                               borderRadius: BorderRadius.circular(999),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.primary.withValues(
+                                  color: colors.primary.withValues(
                                     alpha: 0.4,
                                   ),
                                   blurRadius: 12,
@@ -233,15 +239,15 @@ class BarDetail extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.local_fire_department,
-                                  color: AppColors.onPrimary,
+                                  color: colors.onPrimary,
                                   size: 18,
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
                                   l10n.labelHappyHour,
-                                  style: AppTypography.badge.copyWith(
+                                  style: typography.badge.copyWith(
                                     fontSize: 13,
                                   ),
                                 ),
@@ -274,7 +280,7 @@ class BarDetail extends StatelessWidget {
                         l10n.labelHappyHourPrices,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                          color: colors.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -286,7 +292,7 @@ class BarDetail extends StatelessWidget {
                               Icons.sports_bar,
                               l10n.labelBeer,
                               '${bar.cheapestBeerPrice} kr',
-                              AppColors.primaryContainer,
+                              colors.primaryContainer,
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -296,7 +302,7 @@ class BarDetail extends StatelessWidget {
                               Icons.wine_bar,
                               l10n.labelWine,
                               '${bar.cheapestWinePrice} kr',
-                              AppColors.surfaceHigh,
+                              colors.surfaceHigh,
                             ),
                           ),
                         ],
@@ -311,26 +317,26 @@ class BarDetail extends StatelessWidget {
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                               colors: [
-                                AppColors.success.withValues(alpha: 0.15),
-                                AppColors.success.withValues(alpha: 0.05),
+                                colors.success.withValues(alpha: 0.15),
+                                colors.success.withValues(alpha: 0.05),
                               ],
                             ),
                             borderRadius: BorderRadius.circular(24),
                             border: Border.all(
-                              color: AppColors.success.withValues(alpha: 0.3),
+                              color: colors.success.withValues(alpha: 0.3),
                             ),
                           ),
                           child: Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.celebration,
-                                color: AppColors.success,
+                                color: colors.success,
                               ),
                               const SizedBox(width: 12),
                               Text(
                                 l10n.labelTwoForOneAvailable,
                                 style: theme.textTheme.titleSmall?.copyWith(
-                                  color: AppColors.success,
+                                  color: colors.success,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -346,7 +352,7 @@ class BarDetail extends StatelessWidget {
                           l10n.labelNotes,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                            color: colors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -354,13 +360,13 @@ class BarDetail extends StatelessWidget {
                           width: double.infinity,
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            gradient: AppColors.cardGradient,
+                            gradient: colors.cardGradient,
                             borderRadius: BorderRadius.circular(24),
                           ),
                           child: Text(
                             bar.notes,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: AppColors.textSecondary,
+                              color: colors.textSecondary,
                             ),
                           ),
                         ),
@@ -374,14 +380,14 @@ class BarDetail extends StatelessWidget {
                           l10n.labelAbout,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
+                            color: colors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           bar.description!,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondary,
+                            color: colors.textSecondary,
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -392,7 +398,7 @@ class BarDetail extends StatelessWidget {
                         l10n.labelContact,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                          color: colors.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -420,11 +426,12 @@ class BarDetail extends StatelessWidget {
     required String content,
   }) {
     final theme = Theme.of(context);
+    final colors = BrandProvider.of(context).colors;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: AppColors.cardGradient,
+        gradient: colors.cardGradient,
         borderRadius: BorderRadius.circular(24),
       ),
       child: Row(
@@ -433,14 +440,14 @@ class BarDetail extends StatelessWidget {
           Icon(
             icon,
             size: 20,
-            color: AppColors.primary,
+            color: colors.primary,
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               content,
               style: theme.textTheme.bodyLarge?.copyWith(
-                color: AppColors.textSecondary,
+                color: colors.textSecondary,
               ),
             ),
           ),
@@ -458,6 +465,8 @@ class BarDetail extends StatelessWidget {
     Color accentColor,
   ) {
     final theme = Theme.of(context);
+    final colors = BrandProvider.of(context).colors;
+    final typography = BrandProvider.of(context).typography;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -481,18 +490,18 @@ class BarDetail extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(icon, size: 32, color: AppColors.textPrimary),
+          Icon(icon, size: 32, color: colors.textPrimary),
           const SizedBox(height: 8),
           Text(
             label,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
+              color: colors.textSecondary,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             price,
-            style: AppTypography.price.copyWith(
+            style: typography.price.copyWith(
               fontSize: 20,
             ),
           ),

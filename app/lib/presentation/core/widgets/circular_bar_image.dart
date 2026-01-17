@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:happyhour_app/presentation/core/theme/theme.dart';
+import 'package:happyhour_app/presentation/core/brand/brand.dart';
 
 class CircularBarImage extends StatefulWidget {
   final String? imageUrl;
@@ -93,6 +93,8 @@ class _CircularBarImageState extends State<CircularBarImage>
 
   @override
   Widget build(BuildContext context) {
+    final colors = BrandProvider.of(context).colors;
+
     Widget imageWidget = AnimatedBuilder(
       animation: _pulseAnimation,
       builder: (context, child) {
@@ -113,7 +115,7 @@ class _CircularBarImageState extends State<CircularBarImage>
             boxShadow: [
               if (widget.isHappyHourActive)
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha: glowIntensity),
+                  color: colors.primary.withValues(alpha: glowIntensity),
                   blurRadius: glowBlur,
                   spreadRadius: glowSpread,
                 ),
@@ -127,7 +129,7 @@ class _CircularBarImageState extends State<CircularBarImage>
           child: child,
         );
       },
-      child: _buildImage(),
+      child: _buildImage(context),
     );
     if (widget.heroTag != null) {
       imageWidget = Hero(tag: widget.heroTag!, child: imageWidget);
@@ -135,9 +137,9 @@ class _CircularBarImageState extends State<CircularBarImage>
     return imageWidget;
   }
 
-  Widget _buildImage() {
+  Widget _buildImage(BuildContext context) {
     if (widget.imageUrl == null || widget.imageUrl!.isEmpty) {
-      return _buildPlaceholder();
+      return _buildPlaceholder(context);
     }
     return ClipOval(
       child: CachedNetworkImage(
@@ -145,27 +147,30 @@ class _CircularBarImageState extends State<CircularBarImage>
         width: widget.radius * 2,
         height: widget.radius * 2,
         fit: BoxFit.cover,
-        placeholder: (context, url) => _buildPlaceholder(showLoader: true),
-        errorWidget: (context, url, error) => _buildPlaceholder(),
+        placeholder: (context, url) =>
+            _buildPlaceholder(context, showLoader: true),
+        errorWidget: (context, url, error) => _buildPlaceholder(context),
       ),
     );
   }
 
-  Widget _buildPlaceholder({bool showLoader = false}) {
+  Widget _buildPlaceholder(BuildContext context, {bool showLoader = false}) {
+    final colors = BrandProvider.of(context).colors;
+
     return Container(
       width: widget.radius * 2,
       height: widget.radius * 2,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppColors.surfaceVariant, AppColors.surface],
+          colors: [colors.surfaceVariant, colors.surface],
         ),
         border: Border.all(
           color: widget.isHappyHourActive
-              ? AppColors.primary.withValues(alpha: 0.5)
-              : AppColors.divider,
+              ? colors.primary.withValues(alpha: 0.5)
+              : colors.divider,
           width: widget.isHappyHourActive ? 2 : 1,
         ),
       ),
@@ -174,17 +179,17 @@ class _CircularBarImageState extends State<CircularBarImage>
             ? SizedBox(
                 width: widget.radius * 0.6,
                 height: widget.radius * 0.6,
-                child: const CircularProgressIndicator(
+                child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: AppColors.primary,
+                  color: colors.primary,
                 ),
               )
             : Icon(
                 widget.placeholderIcon,
                 size: widget.radius * 0.8,
                 color: widget.isHappyHourActive
-                    ? AppColors.primary
-                    : AppColors.textTertiary,
+                    ? colors.primary
+                    : colors.textTertiary,
               ),
       ),
     );
