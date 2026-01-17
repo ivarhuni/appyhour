@@ -26,6 +26,8 @@ class BarDto {
   final String notes;
   final String? description;
   final double? rating;
+  @JsonKey(name: 'image_url')
+  final String? imageUrl;
 
   const BarDto({
     required this.id,
@@ -42,6 +44,7 @@ class BarDto {
     required this.notes,
     this.description,
     this.rating,
+    this.imageUrl,
   });
 
   factory BarDto.fromJson(Map<String, dynamic> json) => _$BarDtoFromJson(json);
@@ -65,6 +68,7 @@ class BarDto {
       notes: notes,
       description: description,
       rating: rating,
+      imageUrl: imageUrl,
     );
   }
 }

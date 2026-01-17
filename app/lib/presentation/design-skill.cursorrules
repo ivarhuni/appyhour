@@ -1,0 +1,105 @@
+# Mobile Design Skill — Creative Guidelines
+
+This skill guides creation of distinctive, production-grade mobile interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.
+
+## Design Thinking
+
+Before coding, understand the context and commit to a BOLD aesthetic direction:
+
+- **Purpose**: What problem does this interface solve? Who uses it?
+- **Tone**: Pick an extreme: brutally minimal, maximalist chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like, editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel, industrial/utilitarian, etc. Use these for inspiration but design one that is true to the aesthetic direction.
+- **Constraints**: Technical requirements (platform, performance, accessibility).
+- **Differentiation**: What makes this UNFORGETTABLE? What's the one thing someone will remember?
+
+**CRITICAL**: Choose a clear conceptual direction and execute it with precision. Bold maximalism and refined minimalism both work — the key is intentionality, not intensity.
+
+Then implement working code that is:
+- Production-grade and functional
+- Visually striking and memorable
+- Cohesive with a clear aesthetic point-of-view
+- Meticulously refined in every detail
+
+---
+
+## Mobile Aesthetics Guidelines
+
+### Typography
+
+Choose fonts that are beautiful, unique, and interesting. Avoid generic fonts like Roboto, San Francisco system defaults, or Inter; opt instead for distinctive choices that elevate the interface's aesthetics.
+
+- Use **unexpected, characterful font choices**
+- Pair a distinctive display font with a refined body font
+- Ensure proper weight variation for visual hierarchy
+
+### Color & Theme
+
+Commit to a cohesive aesthetic. Use theme constants for consistency.
+
+- **Dominant colors with sharp accents** outperform timid, evenly-distributed palettes
+- Draw from cultural aesthetics for inspiration
+- Consider how colors feel at different times of day (for apps used in varied lighting)
+
+### Motion & Micro-interactions
+
+Use animations purposefully. Focus on high-impact moments:
+
+- **Staggered reveals** with animation delays create more delight than scattered effects
+- **Page transitions** should feel intentional and contextual
+- **Touch feedback** that's immediate and satisfying (scale, ripple, haptic)
+- **Scroll-driven animations** and parallax effects that surprise
+- **State transitions** that guide the user's eye
+
+### Spatial Composition
+
+Think beyond traditional mobile layouts:
+
+- **Unexpected layouts**: Asymmetry, overlap, diagonal flow
+- **Grid-breaking elements** for emphasis
+- **Generous negative space** OR controlled density (commit to one)
+- **Full-bleed content** vs. contained cards (be intentional)
+
+### Backgrounds & Visual Details
+
+Create atmosphere and depth rather than defaulting to solid colors:
+
+- Gradient meshes and radial gradients
+- Subtle noise textures and grain overlays
+- Layered transparencies and blur effects
+- Dramatic shadows and ambient glows
+- Decorative borders and custom shapes
+
+---
+
+## Anti-Patterns to Avoid
+
+NEVER use generic AI-generated aesthetics:
+
+| ❌ Avoid | ✅ Instead |
+|----------|-----------|
+| Generic system fonts (Roboto, SF Pro, Inter) | Custom, distinctive typefaces |
+| Purple gradients on light backgrounds | Context-appropriate palettes with commitment |
+| Predictable card layouts | Layouts with visual interest and hierarchy |
+| Cookie-cutter Material/Cupertino defaults | Customized design that has character |
+| Uniform corner radii everywhere | Intentional shape language |
+| Timid, evenly-distributed colors | Bold dominant colors with sharp accents |
+| Animations just because | Purposeful motion that guides attention |
+| Following every design trend | Making unexpected choices that feel designed |
+
+---
+
+## Match Complexity to Vision
+
+**IMPORTANT**: Match implementation complexity to the aesthetic vision.
+
+- **Maximalist designs** need elaborate code with extensive animations, layered effects, rich textures
+- **Minimalist or refined designs** need restraint, precision, and careful attention to spacing, typography, and subtle details
+
+Elegance comes from executing the vision well, not from adding more.
+
+---
+
+## Remember
+
+Claude is capable of extraordinary creative work. Don't hold back — show what can truly be created when thinking outside the box and committing fully to a distinctive vision.
+
+Interpret creatively and make unexpected choices that feel genuinely designed for the context. No design should be the same. Vary between light and dark themes, different fonts, different aesthetics. NEVER converge on common choices across generations.

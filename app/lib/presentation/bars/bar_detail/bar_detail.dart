@@ -6,25 +6,34 @@ import 'package:happyhour_app/application/bars/bar_detail/bar_detail_state.dart'
 import 'package:happyhour_app/domain/bars/entities/bar.dart';
 import 'package:happyhour_app/gen_l10n/app_localizations.dart';
 import 'package:happyhour_app/presentation/bars/bar_detail/bar_map.dart';
+import 'package:happyhour_app/presentation/core/theme/theme.dart';
+import 'package:happyhour_app/presentation/core/widgets/circular_bar_image.dart';
 
 /// Screen displaying detailed information about a single bar.
+/// Uses circular hero images, 24px+ radii, and gradient backgrounds
+/// per design system spec.
 class BarDetail extends StatelessWidget {
   const BarDetail({super.key});
 
+  /// Calculate responsive image radius for detail view
+  /// Target: 100-140px diameter = 50-70 radius
+  double _getDetailRadius(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    return (width * 0.15).clamp(50.0, 70.0);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: AppColors.background,
       body: BlocBuilder<BarDetailCubit, BarDetailState>(
         builder: (context, state) {
           return switch (state) {
             BarDetailInitial() => const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(color: AppColors.primary),
             ),
             BarDetailLoading() => const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(color: AppColors.primary),
             ),
             BarDetailError(:final message) => _buildErrorState(
               context,
@@ -50,7 +59,17 @@ class BarDetail extends StatelessWidget {
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.arrow_back),
+                  icon: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: const BoxDecoration(
+                      color: AppColors.surface,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
                   onPressed: () => context.pop(),
                 ),
               ],
@@ -63,16 +82,17 @@ class BarDetail extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.error_outline,
                       size: 64,
-                      color: theme.colorScheme.error,
+                      color: AppColors.error,
                     ),
                     const SizedBox(height: 16),
                     Text(
                       l10n.msgOops,
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -80,7 +100,7 @@ class BarDetail extends StatelessWidget {
                       message,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyLarge?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
+                        color: AppColors.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -102,213 +122,289 @@ class BarDetail extends StatelessWidget {
   Widget _buildLoadedState(BuildContext context, Bar bar, bool isActive) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context);
+    final imageRadius = _getDetailRadius(context);
 
     return CustomScrollView(
       slivers: [
         SliverAppBar(
-          expandedHeight: 200,
+          expandedHeight: 220,
           pinned: true,
+          backgroundColor: AppColors.background,
           leading: IconButton(
             icon: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surface.withValues(alpha: 0.8),
+                color: AppColors.surface.withValues(alpha: 0.9),
                 shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              child: const Icon(Icons.arrow_back),
+              child: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
             ),
             onPressed: () => context.pop(),
           ),
           flexibleSpace: FlexibleSpaceBar(
-            background: BarMap(
-              latitude: bar.latitude,
-              longitude: bar.longitude,
-              name: bar.name,
+            background: Stack(
+              fit: StackFit.expand,
+              children: [
+                // Map background
+                BarMap(
+                  latitude: bar.latitude,
+                  longitude: bar.longitude,
+                  name: bar.name,
+                ),
+                // Gradient overlay for depth
+                Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        AppColors.background.withValues(alpha: 0.8),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
         SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
+          child: Transform.translate(
+            offset: Offset(0, -imageRadius * 0.6),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Name and active status
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        bar.name,
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    if (isActive)
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primary,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.local_fire_department,
-                              color: theme.colorScheme.onPrimary,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              l10n.labelHappyHour,
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onPrimary,
+                // Circular hero image overlapping the header
+                CircularBarImage(
+                  imageUrl: bar.imageUrl,
+                  radius: imageRadius,
+                  isHappyHourActive: isActive,
+                  heroTag: 'bar-image-${bar.id}',
+                ),
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Name and active status
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              bar.name,
+                              style: theme.textTheme.headlineMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
+                                color: AppColors.textPrimary,
                               ),
+                              textAlign: TextAlign.center,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // Address
-                _buildInfoRow(
-                  context,
-                  Icons.location_on,
-                  bar.street,
-                ),
-                const SizedBox(height: 12),
-
-                // Happy hour times
-                _buildInfoRow(
-                  context,
-                  Icons.access_time,
-                  '${bar.happyHourDays.displayString} • ${bar.happyHourTime.displayString}',
-                ),
-                const SizedBox(height: 24),
-
-                // Prices section
-                Text(
-                  l10n.labelHappyHourPrices,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildPriceCard(
-                        context,
-                        Icons.sports_bar,
-                        l10n.labelBeer,
-                        '${bar.cheapestBeerPrice} kr',
-                        theme.colorScheme.primaryContainer,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildPriceCard(
-                        context,
-                        Icons.wine_bar,
-                        l10n.labelWine,
-                        '${bar.cheapestWinePrice} kr',
-                        theme.colorScheme.secondaryContainer,
-                      ),
-                    ),
-                  ],
-                ),
-                if (bar.twoForOne) ...[
-                  const SizedBox(height: 12),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.tertiaryContainer,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.celebration,
-                          color: theme.colorScheme.onTertiaryContainer,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          l10n.labelTwoForOneAvailable,
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            color: theme.colorScheme.onTertiaryContainer,
-                            fontWeight: FontWeight.bold,
+                      if (isActive) ...[
+                        const SizedBox(height: 12),
+                        Center(
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.circular(999),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.4,
+                                  ),
+                                  blurRadius: 12,
+                                  spreadRadius: 2,
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(
+                                  Icons.local_fire_department,
+                                  color: AppColors.onPrimary,
+                                  size: 18,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  l10n.labelHappyHour,
+                                  style: AppTypography.badge.copyWith(
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 24),
+                      const SizedBox(height: 20),
 
-                // Notes section
-                if (bar.notes.isNotEmpty) ...[
-                  Text(
-                    l10n.labelNotes,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHigh,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      bar.notes,
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
+                      // Address - gradient card
+                      _buildInfoCard(
+                        context,
+                        icon: Icons.location_on,
+                        content: bar.street,
+                      ),
+                      const SizedBox(height: 12),
 
-                // Description section
-                if (bar.description != null && bar.description!.isNotEmpty) ...[
-                  Text(
-                    l10n.labelAbout,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    bar.description!,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
+                      // Happy hour times - gradient card
+                      _buildInfoCard(
+                        context,
+                        icon: Icons.access_time,
+                        content:
+                            '${bar.happyHourDays.displayString} • ${bar.happyHourTime.displayString}',
+                      ),
+                      const SizedBox(height: 24),
 
-                // Contact
-                Text(
-                  l10n.labelContact,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                      // Prices section
+                      Text(
+                        l10n.labelHappyHourPrices,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildPriceCard(
+                              context,
+                              Icons.sports_bar,
+                              l10n.labelBeer,
+                              '${bar.cheapestBeerPrice} kr',
+                              AppColors.primaryContainer,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildPriceCard(
+                              context,
+                              Icons.wine_bar,
+                              l10n.labelWine,
+                              '${bar.cheapestWinePrice} kr',
+                              AppColors.surfaceHigh,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (bar.twoForOne) ...[
+                        const SizedBox(height: 12),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                AppColors.success.withValues(alpha: 0.15),
+                                AppColors.success.withValues(alpha: 0.05),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: AppColors.success.withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.celebration,
+                                color: AppColors.success,
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                l10n.labelTwoForOneAvailable,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  color: AppColors.success,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 24),
+
+                      // Notes section
+                      if (bar.notes.isNotEmpty) ...[
+                        Text(
+                          l10n.labelNotes,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            gradient: AppColors.cardGradient,
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          child: Text(
+                            bar.notes,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+
+                      // Description section
+                      if (bar.description != null &&
+                          bar.description!.isNotEmpty) ...[
+                        Text(
+                          l10n.labelAbout,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          bar.description!,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+
+                      // Contact
+                      Text(
+                        l10n.labelContact,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      _buildInfoCard(
+                        context,
+                        icon: Icons.email_outlined,
+                        content: bar.email,
+                      ),
+                      const SizedBox(height: 48),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 8),
-                _buildInfoRow(
-                  context,
-                  Icons.email_outlined,
-                  bar.email,
-                ),
-                const SizedBox(height: 32),
               ],
             ),
           ),
@@ -317,58 +413,87 @@ class BarDetail extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(BuildContext context, IconData icon, String text) {
+  /// Info card with gradient background and 24px radius
+  Widget _buildInfoCard(
+    BuildContext context, {
+    required IconData icon,
+    required String content,
+  }) {
     final theme = Theme.of(context);
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(
-          icon,
-          size: 20,
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            text,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: AppColors.cardGradient,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            icon,
+            size: 20,
+            color: AppColors.primary,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              content,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
+  /// Price card with gradient background and 24px radius
   Widget _buildPriceCard(
     BuildContext context,
     IconData icon,
     String label,
     String price,
-    Color backgroundColor,
+    Color accentColor,
   ) {
     final theme = Theme.of(context);
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            accentColor,
+            accentColor.withValues(alpha: 0.6),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: accentColor.withValues(alpha: 0.2),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          Icon(icon, size: 32),
+          Icon(icon, size: 32, color: AppColors.textPrimary),
           const SizedBox(height: 8),
           Text(
             label,
-            style: theme.textTheme.bodyMedium,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             price,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
+            style: AppTypography.price.copyWith(
+              fontSize: 20,
             ),
           ),
         ],

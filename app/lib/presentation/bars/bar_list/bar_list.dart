@@ -211,6 +211,7 @@ class _BarListState extends State<BarList> {
                       final bar = state.filteredBars[index];
                       return BarListItem(
                         bar: bar,
+                        index: index,
                         onTap: () => context.push('/bar/${bar.id}'),
                       );
                     },

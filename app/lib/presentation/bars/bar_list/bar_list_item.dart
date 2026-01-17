@@ -1,200 +1,287 @@
 import 'package:flutter/material.dart';
 import 'package:happyhour_app/domain/bars/entities/bar.dart';
 import 'package:happyhour_app/gen_l10n/app_localizations.dart';
+import 'package:happyhour_app/presentation/core/theme/theme.dart';
+import 'package:happyhour_app/presentation/core/widgets/animated_card.dart';
+import 'package:happyhour_app/presentation/core/widgets/circular_bar_image.dart';
 
 /// A list item widget displaying bar summary information.
-class BarListItem extends StatelessWidget {
+/// Uses AnimatedCard with gradient background, CircularBarImage with glow,
+/// and stadium-shaped price chips per design system spec.
+class BarListItem extends StatefulWidget {
   final Bar bar;
   final VoidCallback? onTap;
+  final int index;
 
   const BarListItem({
     super.key,
     required this.bar,
     this.onTap,
+    this.index = 0,
   });
+
+  @override
+  State<BarListItem> createState() => _BarListItemState();
+}
+
+class _BarListItemState extends State<BarListItem>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+  bool _reduceMotion = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 400),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeOut),
+    );
+    _slideAnimation =
+        Tween<Offset>(
+          begin: const Offset(0, 0.1),
+          end: Offset.zero,
+        ).animate(
+          CurvedAnimation(parent: _fadeController, curve: Curves.easeOutCubic),
+        );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _reduceMotion = MediaQuery.of(context).disableAnimations;
+
+    if (_fadeController.status == AnimationStatus.dismissed) {
+      if (_reduceMotion) {
+        // Skip animation, show immediately
+        _fadeController.value = 1.0;
+      } else {
+        // Stagger: delay based on index
+        Future.delayed(Duration(milliseconds: widget.index * 60), () {
+          if (mounted) _fadeController.forward();
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    super.dispose();
+  }
+
+  /// Calculate responsive image radius based on screen width
+  /// Target: 56-72px diameter = 28-36 radius
+  double _getResponsiveRadius(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    return (width * 0.08).clamp(28.0, 36.0);
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isActive = bar.isHappyHourActive();
+    final l10n = AppLocalizations.of(context);
+    final isActive = widget.bar.isHappyHourActive();
+    final radius = _getResponsiveRadius(context);
 
-    return Card(
+    final Widget content = AnimatedCard(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: isActive
-            ? BorderSide(color: theme.colorScheme.primary, width: 2)
-            : BorderSide.none,
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      bar.name,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+      isActive: isActive,
+      onTap: widget.onTap,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Circular bar image with hero transition
+          CircularBarImage(
+            imageUrl: widget.bar.imageUrl,
+            radius: radius,
+            isHappyHourActive: isActive,
+            heroTag: 'bar-image-${widget.bar.id}',
+          ),
+          const SizedBox(width: 16),
+          // Bar info column
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Name and active status row
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        widget.bar.name,
+                        style: AppTypography.barName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  ),
-                  if (isActive)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        AppLocalizations.of(context).labelHappyHour,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onPrimary,
-                          fontWeight: FontWeight.bold,
+                    if (isActive)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(999),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.4),
+                              blurRadius: 8,
+                            ),
+                          ],
+                        ),
+                        child: Text(
+                          l10n.labelHappyHour,
+                          style: AppTypography.badge,
                         ),
                       ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(
-                    Icons.location_on_outlined,
-                    size: 16,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      bar.street,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  _buildPriceChip(
-                    context,
-                    Icons.sports_bar,
-                    '${bar.cheapestBeerPrice} kr',
-                    theme.colorScheme.primaryContainer,
-                  ),
-                  const SizedBox(width: 8),
-                  _buildPriceChip(
-                    context,
-                    Icons.wine_bar,
-                    '${bar.cheapestWinePrice} kr',
-                    theme.colorScheme.secondaryContainer,
-                  ),
-                  if (bar.twoForOne) ...[
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.tertiaryContainer,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        AppLocalizations.of(context).labelTwoForOne,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onTertiaryContainer,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
                   ],
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(
-                    Icons.access_time,
-                    size: 16,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${bar.happyHourDays.displayString} • ${bar.happyHourTime.displayString}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  if (bar.distanceFromUser != null) ...[
-                    const Spacer(),
-                    Icon(
-                      Icons.directions_walk,
-                      size: 16,
-                      color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(height: 6),
+                // Address row
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.location_on_outlined,
+                      size: 14,
+                      color: AppColors.textTertiary,
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      _formatDistance(context, bar.distanceFromUser!),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
+                    Expanded(
+                      child: Text(
+                        widget.bar.street,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPriceChip(
-    BuildContext context,
-    IconData icon,
-    String label,
-    Color backgroundColor,
-  ) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+                ),
+                const SizedBox(height: 10),
+                // Price chips row
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 6,
+                  children: [
+                    _buildPriceChip(
+                      Icons.sports_bar,
+                      '${widget.bar.cheapestBeerPrice} kr',
+                      AppColors.primaryContainer,
+                    ),
+                    _buildPriceChip(
+                      Icons.wine_bar,
+                      '${widget.bar.cheapestWinePrice} kr',
+                      AppColors.surfaceHigh,
+                    ),
+                    if (widget.bar.twoForOne)
+                      _buildSpecialChip(
+                        l10n.labelTwoForOne,
+                        AppColors.success,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                // Time and distance row
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.access_time,
+                      size: 14,
+                      color: AppColors.textTertiary,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        '${widget.bar.happyHourDays.displayString} • ${widget.bar.happyHourTime.displayString}',
+                        style: AppTypography.data.copyWith(
+                          color: AppColors.textTertiary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (widget.bar.distanceFromUser != null) ...[
+                      const Icon(
+                        Icons.directions_walk,
+                        size: 14,
+                        color: AppColors.textTertiary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        _formatDistance(widget.bar.distanceFromUser!),
+                        style: AppTypography.data.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
+
+    // Wrap with staggered entrance animation
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: SlideTransition(
+        position: _slideAnimation,
+        child: content,
+      ),
+    );
   }
 
-  String _formatDistance(BuildContext context, double meters) {
-    final l10n = AppLocalizations.of(context);
+  /// Stadium-shaped price chip (FR-006)
+  Widget _buildPriceChip(IconData icon, String label, Color backgroundColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(999), // Stadium shape
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: AppColors.textPrimary),
+          const SizedBox(width: 4),
+          Text(label, style: AppTypography.chip),
+        ],
+      ),
+    );
+  }
+
+  /// Special badge chip for 2-for-1 deals
+  Widget _buildSpecialChip(String label, Color backgroundColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: backgroundColor.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: backgroundColor.withValues(alpha: 0.5),
+        ),
+      ),
+      child: Text(
+        label,
+        style: AppTypography.chip.copyWith(color: backgroundColor),
+      ),
+    );
+  }
+
+  String _formatDistance(double meters) {
     if (meters < 1000) {
-      return l10n.distanceMeters(meters.round());
+      return '${meters.round()} m';
     } else {
-      return l10n.distanceKilometers((meters / 1000).toStringAsFixed(1));
+      return '${(meters / 1000).toStringAsFixed(1)} km';
     }
   }
 }
