@@ -26,6 +26,7 @@ class _CircularBarImageState extends State<CircularBarImage>
     with SingleTickerProviderStateMixin {
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
+  bool _reduceMotion = false;
 
   @override
   void initState() {
@@ -37,7 +38,36 @@ class _CircularBarImageState extends State<CircularBarImage>
     _pulseAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
-    if (widget.isHappyHourActive) {
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _checkReduceMotion();
+  }
+
+  void _checkReduceMotion() {
+    final reduceMotion = MediaQuery.of(context).disableAnimations;
+
+    if (reduceMotion != _reduceMotion) {
+      _reduceMotion = reduceMotion;
+      _updateAnimation();
+    } else if (_pulseController.status == AnimationStatus.dismissed &&
+        widget.isHappyHourActive &&
+        !_reduceMotion) {
+      // Initial start of animation
+      _pulseController.repeat(reverse: true);
+    }
+  }
+
+  void _updateAnimation() {
+    if (_reduceMotion) {
+      // Respect reduce-motion: stop animation, show static state
+      if (_pulseController.isAnimating) {
+        _pulseController.stop();
+        _pulseController.value = 0.5; // Static mid-point for visual distinction
+      }
+    } else if (widget.isHappyHourActive) {
       _pulseController.repeat(reverse: true);
     }
   }
@@ -46,9 +76,9 @@ class _CircularBarImageState extends State<CircularBarImage>
   void didUpdateWidget(CircularBarImage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isHappyHourActive != oldWidget.isHappyHourActive) {
-      if (widget.isHappyHourActive) {
+      if (widget.isHappyHourActive && !_reduceMotion) {
         _pulseController.repeat(reverse: true);
-      } else {
+      } else if (!widget.isHappyHourActive) {
         _pulseController.stop();
         _pulseController.reset();
       }

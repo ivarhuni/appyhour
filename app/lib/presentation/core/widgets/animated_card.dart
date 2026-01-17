@@ -33,6 +33,7 @@ class _AnimatedCardState extends State<AnimatedCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _scaleController;
   late Animation<double> _scaleAnimation;
+  bool _reduceMotion = false;
 
   @override
   void initState() {
@@ -47,22 +48,30 @@ class _AnimatedCardState extends State<AnimatedCard>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _reduceMotion = MediaQuery.of(context).disableAnimations;
+  }
+
+  @override
   void dispose() {
     _scaleController.dispose();
     super.dispose();
   }
 
   void _handleTapDown(TapDownDetails details) {
-    if (widget.showTapFeedback && widget.onTap != null)
+    // Respect reduce-motion: skip scale animation
+    if (widget.showTapFeedback && widget.onTap != null && !_reduceMotion) {
       _scaleController.forward();
+    }
   }
 
   void _handleTapUp(TapUpDetails details) {
-    if (widget.showTapFeedback) _scaleController.reverse();
+    if (widget.showTapFeedback && !_reduceMotion) _scaleController.reverse();
   }
 
   void _handleTapCancel() {
-    if (widget.showTapFeedback) _scaleController.reverse();
+    if (widget.showTapFeedback && !_reduceMotion) _scaleController.reverse();
   }
 
   BorderRadius get _borderRadius {

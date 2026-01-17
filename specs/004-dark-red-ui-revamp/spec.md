@@ -2,7 +2,7 @@
 
 **Feature Branch**: `004-dark-red-ui-revamp`  
 **Created**: 2024-12-29  
-**Status**: Draft  
+**Status**: Planned  
 **Input**: User description: "Revamp UI with dark/red color scheme, circular images, fluid design, and custom prompt file"
 
 ## Overview
@@ -12,6 +12,16 @@ Transform the HappyHour app from its current amber/gold "boxy" design to a moody
 **Current State**: The app has documented design guidelines in `.cursorrules` files but the actual implementation still uses the old amber/gold color scheme with rectangular components.
 
 **Target State**: Fully implemented dark/red theme with circular images, gradient cards, subtle glows, and refined micro-interactions.
+
+---
+
+## Clarifications
+
+### Session 2026-01-17
+
+- Q: Which specific fonts should be used for typography (FR-013)? → A: Playfair Display for headlines, Plus Jakarta Sans for body text
+- Q: Should circular image sizes be fixed or flexible with bounds? → A: Flexible sizing with aspect ratio preservation; list items use 56-72px diameter range, detail screen uses 100-140px diameter range based on screen width
+- Q: How should animations behave when users have reduce-motion accessibility settings enabled? → A: Respect system `prefers-reduced-motion` / `AccessibilityFeatures.reduceMotion`; disable pulsing glows, staggered animations, and scale feedback; retain instant state changes
 
 ---
 
@@ -102,6 +112,8 @@ As a developer working on the app, I want a single consolidated `.cursorrules` f
 - What happens when bar images fail to load? → Display a styled placeholder maintaining the circular shape
 - How does the app handle users who prefer light mode? → For MVP, enforce dark theme only; light theme support is out of scope
 - What happens on low-performance devices? → Animations should use hardware acceleration and gracefully degrade
+- What happens when users have reduce-motion accessibility enabled? → Disable pulsing glows, staggered animations, and scale feedback; retain instant state changes for visual clarity
+- What happens if Google Fonts fail to load? → Fall back to system sans-serif fonts while maintaining color scheme and layout
 
 ## Requirements *(mandatory)*
 
@@ -119,7 +131,9 @@ As a developer working on the app, I want a single consolidated `.cursorrules` f
 - **FR-010**: Active happy hour indicators MUST use a pulsing glow animation
 - **FR-011**: App MUST maintain WCAG AA contrast ratios (4.5:1 for normal text, 3:1 for large text)
 - **FR-012**: A consolidated `.cursorrules` file MUST exist at `app/.cursorrules` with complete design system documentation
-- **FR-013**: Typography MUST use custom fonts appropriate for a bar/cocktail aesthetic (display fonts for headlines, sans-serif for body)
+- **FR-013**: Typography MUST use Playfair Display for headlines and Plus Jakarta Sans for body text (via Google Fonts)
+- **FR-014**: Animations MUST respect system accessibility settings; when `prefers-reduced-motion` or `AccessibilityFeatures.reduceMotion` is enabled, disable pulsing glows, staggered list animations, and scale feedback while retaining instant state changes
+- **FR-015**: Circular image sizing MUST be responsive: 56-72px diameter range in list views, 100-140px diameter range in detail views, scaling based on screen width while preserving aspect ratio
 
 ### Key Entities
 
@@ -133,7 +147,7 @@ As a developer working on the app, I want a single consolidated `.cursorrules` f
 ### Measurable Outcomes
 
 - **SC-001**: 100% of screens use the dark color palette - no amber/gold colors remain in production code
-- **SC-002**: All bar images display as circles with consistent sizing (64px diameter in list, 120px in detail)
+- **SC-002**: All bar images display as circles with responsive sizing (56-72px diameter in list, 100-140px in detail)
 - **SC-003**: Card corner radii are 24px or larger throughout the app
 - **SC-004**: All text meets WCAG AA contrast requirements when tested with accessibility tools
 - **SC-005**: Page transitions complete within 300-400ms with no jank (60fps)

@@ -1,11 +1,255 @@
-# HappyHour Flutter App — UI Design System
+# HappyHour Flutter App — Complete Guidelines
 
-You are an expert Flutter UI/UX designer specializing in:
-- Material Design 3 with custom dark theming
-- Expressive animations (Hero, AnimatedContainer, FadeTransition, staggered reveals)
-- Color theory: moody dark palettes with vibrant accent colors
-- Organic layouts with curves, circles, gradients, and flowing shapes
-- Micro-interactions that feel premium without overwhelming
+You are an expert in Flutter and Dart development. Your goal is to build beautiful, performant, and maintainable applications following modern best practices.
+
+---
+
+## Interaction Guidelines
+
+- **User Persona**: Assume the user is familiar with programming concepts, dart & flutter.
+- **Clarification**: If a request is ambiguous, ask for clarification on the intended functionality and target platform.
+- **Dependencies**: When suggesting new dependencies from `pub.dev`, explain their benefits.
+- **Formatting**: Use `dart format` or the `dart_format` MCP tool to ensure consistent code formatting.
+- **Fixes**: Use `dart fix --apply` or the `dart_fix` MCP tool to automatically fix common errors.
+- **Linting**: Use the Dart linter with recommended rules. Use `analyze_files` to run the linter.
+
+---
+
+## Project Structure
+
+This is a standard Flutter project:
+
+```
+app/
+├── lib/
+│   ├── main.dart                    # Primary application entry point
+│   ├── application/                 # Business logic (Cubits, BLoC)
+│   ├── domain/                      # Domain models and entities
+│   ├── infrastructure/              # Data layer (repositories, API clients)
+│   └── presentation/                # UI layer (widgets, screens)
+├── test/
+│   ├── unit/                        # Unit tests
+│   └── widget/                      # Widget tests
+└── pubspec.yaml
+```
+
+---
+
+## Flutter Style Guide
+
+### Core Principles
+
+- **SOLID Principles**: Apply SOLID principles throughout the codebase.
+- **Concise and Declarative**: Write concise, modern, technical Dart code. Prefer functional and declarative patterns.
+- **Composition over Inheritance**: Favor composition for building complex widgets and logic.
+- **Immutability**: Prefer immutable data structures. Widgets (especially `StatelessWidget`) should be immutable.
+- **State Management**: Separate ephemeral state and app state. This project uses `flutter_bloc` / Cubit for state management.
+
+### Naming Conventions
+
+- Use `PascalCase` for classes.
+- Use `camelCase` for members, variables, functions, and enums.
+- Use `snake_case` for file names.
+- Avoid abbreviations — use meaningful, descriptive names.
+
+### Code Organization
+
+- **Line length**: Lines should be 80 characters or fewer.
+- **Functions**: Keep functions short with a single purpose (strive for <20 lines).
+- **Private Widgets**: Use small, private `Widget` classes instead of private helper methods that return a `Widget`.
+- **Build Methods**: Break down large `build()` methods into smaller, reusable private Widget classes.
+
+---
+
+## Dart Best Practices
+
+### Effective Dart
+
+Follow the official [Effective Dart](https://dart.dev/effective-dart) guidelines.
+
+### Async/Await
+
+- Use `Future`s, `async`, and `await` for asynchronous operations.
+- Use `Stream`s for sequences of asynchronous events.
+- Ensure proper error handling with `try-catch` blocks.
+
+### Null Safety
+
+- Write code that is soundly null-safe.
+- Leverage Dart's null safety features.
+- Avoid `!` unless the value is guaranteed to be non-null.
+
+### Pattern Matching & Modern Features
+
+- Use pattern matching features where they simplify the code.
+- Use records to return multiple types where defining an entire class is cumbersome.
+- Prefer exhaustive `switch` statements or expressions (no `break` needed).
+- Use arrow syntax for simple one-line functions.
+
+### Exception Handling
+
+- Use `try-catch` blocks for handling exceptions.
+- Use custom exceptions for situations specific to your code.
+
+---
+
+## Flutter Best Practices
+
+### Widget Guidelines
+
+- **Immutability**: Widgets are immutable; when the UI needs to change, Flutter rebuilds the widget tree.
+- **Composition**: Prefer composing smaller widgets over extending existing ones to avoid deep nesting.
+- **Const Constructors**: Use `const` constructors for widgets and in `build()` methods whenever possible to reduce rebuilds.
+- **Build Method Performance**: Avoid expensive operations (network calls, complex computations) directly within `build()` methods.
+
+### Performance
+
+- **ListView.builder**: Use `ListView.builder` or `SliverList` for long lists (lazy-loaded for performance).
+- **Isolates**: Use `compute()` to run expensive calculations in a separate isolate to avoid blocking the UI thread.
+- **60fps Target**: Maintain 60fps scroll performance.
+
+### Navigation
+
+This project uses `go_router` for navigation.
+
+---
+
+## Package Management
+
+- **MCP Tool**: Use the `pub` MCP tool when available for package management.
+- **Adding Dependencies**: Use `flutter pub add <package_name>` or the `pub` MCP tool.
+- **Dev Dependencies**: Use `flutter pub add dev:<package_name>`.
+- **Removing Dependencies**: Use `dart pub remove <package_name>`.
+
+---
+
+## Code Quality
+
+- **Error Handling**: Anticipate and handle potential errors. Don't let code fail silently.
+- **Logging**: Use the `logging` package instead of `print`.
+- **Testing**: Write code with testing in mind. Use dependency injection for mockable code.
+- **Comments**: Write clear comments for complex or non-obvious code. Avoid over-commenting.
+
+---
+
+## Documentation
+
+### dartdoc Style
+
+Write `dartdoc`-style comments for all public APIs:
+
+```dart
+/// Fetches bar data from the API.
+///
+/// Returns a list of [Bar] entities. Throws [NetworkException]
+/// if the request fails.
+Future<List<Bar>> fetchBars() async { ... }
+```
+
+### Documentation Philosophy
+
+- **Comment wisely**: Explain *why* the code is written a certain way, not *what* it does.
+- **Start with a summary**: The first sentence should be a concise, user-centric summary ending with a period.
+- **Avoid redundancy**: Don't repeat information obvious from the code's context.
+
+---
+
+## Application Architecture
+
+This project follows a layered architecture:
+
+| Layer | Purpose | Location |
+|-------|---------|----------|
+| **Presentation** | Widgets, screens, UI components | `lib/presentation/` |
+| **Application** | Business logic (Cubits, BLoC) | `lib/application/` |
+| **Domain** | Entities, domain models | `lib/domain/` |
+| **Infrastructure** | Repositories, API clients, data sources | `lib/infrastructure/` |
+
+### Key Principles
+
+- **Separation of Concerns**: Clear boundaries between layers.
+- **Dependency Injection**: Use for testability and flexibility.
+- **Unidirectional Data Flow**: State flows down, events flow up.
+
+---
+
+## State Management (flutter_bloc)
+
+This project uses `flutter_bloc` with Cubit:
+
+```dart
+class BarListCubit extends Cubit<BarListState> {
+  BarListCubit(this._barRepository) : super(const BarListState.initial());
+  
+  final BarRepository _barRepository;
+  
+  Future<void> loadBars() async {
+    emit(state.copyWith(status: LoadingStatus.loading));
+    try {
+      final bars = await _barRepository.getBars();
+      emit(state.copyWith(status: LoadingStatus.success, bars: bars));
+    } catch (e) {
+      emit(state.copyWith(status: LoadingStatus.failure, error: e.toString()));
+    }
+  }
+}
+```
+
+---
+
+## Testing Guidelines
+
+### Test Types
+
+- **Unit Tests**: Test business logic and domain models in isolation.
+- **Widget Tests**: Test UI components with mocked dependencies.
+- **Integration Tests**: Test complete user flows.
+
+### Running Tests
+
+Use the `run_tests` MCP tool or:
+
+```bash
+flutter test
+```
+
+---
+
+## Lint Rules
+
+Include in `analysis_options.yaml`:
+
+```yaml
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    avoid_print: true
+    prefer_single_quotes: true
+```
+
+---
+
+## General Anti-Patterns to Avoid
+
+| ❌ Don't | ✅ Do Instead |
+|----------|---------------|
+| Deep widget nesting | Extract into smaller, named widgets |
+| Business logic in widgets | Move to Cubit/BLoC layer |
+| Hardcoded strings | Use localization (AppLocalizations) |
+| Magic numbers | Use named constants |
+| Mutable state in StatelessWidget | Use StatefulWidget or Cubit |
+| `print()` statements | Use `logging` package |
+| Ignoring null safety | Embrace nullable types properly |
+| Blocking the UI thread | Use isolates for heavy computation |
+| Helper methods returning Widget | Private Widget classes |
+| Expensive operations in build() | Move to state management layer |
+
+---
+
+# UI Design System
 
 ## Project Context
 
@@ -14,55 +258,88 @@ This is a **Happy Hour** bar finder app for Reykjavik, Iceland. Every design cho
 - **Warmth & energy**: Red accents suggest excitement without being aggressive
 - **Premium cocktail bar**: Sophisticated and refined, never cheap or garish
 
+## Expertise Areas
+
+- Material Design 3 with custom dark theming
+- Expressive animations (Hero, AnimatedContainer, FadeTransition, staggered reveals)
+- Color theory: moody dark palettes with vibrant accent colors
+- Organic layouts with curves, circles, gradients, and flowing shapes
+- Micro-interactions that feel premium without overwhelming
+
 ---
 
-## Design Tokens
+## Color Scheme
 
-### Color Palette (Dark + Red)
+### Contrast Ratios (WCAG 2.1)
 
-```dart
-// In your AppColors class or theme definition:
+- **Normal Text**: Minimum contrast ratio of **4.5:1**.
+- **Large Text** (18pt or 14pt bold): Minimum contrast ratio of **3:1**.
 
-// Backgrounds (near-black with warmth)
-static const background = Color(0xFF0D0D0D);         // Primary background
-static const backgroundGradientEnd = Color(0xFF1A1A1A); // Gradient endpoint
-static const surface = Color(0xFF1E1E1E);            // Cards, elevated surfaces
-static const surfaceVariant = Color(0xFF2A2020);     // Cards with red undertone
+### This Project's Palette
 
-// Primary Reds (your brand)
-static const primary = Color(0xFFC62828);            // Deep red — main accent
-static const primaryLight = Color(0xFFE53935);       // Brighter red — hover/focus
-static const secondary = Color(0xFFFF5252);          // Vibrant red — notifications
+| Role | Color | Hex |
+|------|-------|-----|
+| Primary | Deep Red | ~#C62828 |
+| Background | Near Black | 0xFF0D0D0D |
+| Surface | Dark Gray | 0xFF1A1A1A |
+| Surface Variant | Slightly Lighter | 0xFF242424 |
+| On Surface | Light Text | 0xFFE0E0E0 |
 
-// Semantic Colors
-static const success = Color(0xFF4CAF50);            // Happy hour ACTIVE
-static const warning = Color(0xFFFFB74D);            // Ending soon
-static const error = Color(0xFFEF5350);              // Errors
+### 60-30-10 Rule
 
-// Text Hierarchy
-static const textPrimary = Color(0xFFFAFAFA);        // Headlines, important
-static const textSecondary = Color(0xFFB0B0B0);      // Body, descriptions
-static const textTertiary = Color(0xFF757575);       // Hints, disabled
-```
+- **60%**: Background (dark)
+- **30%**: Surface (cards, components)
+- **10%**: Primary accent (red)
 
-### Typography
+---
 
-Use Google Fonts for distinctive character:
+## Typography
 
-| Role              | Font Family          | Weight    | Purpose                        |
-|-------------------|----------------------|-----------|--------------------------------|
-| Display/Headlines | Playfair Display     | 600–700   | Bar names, section headers     |
-| Body/Labels       | DM Sans              | 400–500   | Descriptions, UI labels        |
-| Numbers/Prices    | JetBrains Mono       | 500       | Prices, times, distances       |
+### Font Selection
+
+- **Limit families**: Stick to 1-2 font families for the entire app.
+- **Legibility**: Prioritize fonts that are easy to read on all screen sizes.
+- **This project**: Playfair Display (headers), Plus Jakarta Sans (body).
+
+### Typography Scale
 
 ```dart
-// Example in _buildTheme():
-textTheme: GoogleFonts.dmSansTextTheme(ThemeData.dark().textTheme).copyWith(
-  displayLarge: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w700),
-  headlineMedium: GoogleFonts.playfairDisplay(fontWeight: FontWeight.w600),
-  labelMedium: GoogleFonts.jetbrainsMono(fontWeight: FontWeight.w500),
+textTheme: const TextTheme(
+  displayLarge: TextStyle(fontSize: 57.0, fontWeight: FontWeight.bold),
+  titleLarge: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+  bodyLarge: TextStyle(fontSize: 16.0, height: 1.5),
+  bodyMedium: TextStyle(fontSize: 14.0, height: 1.4),
+  labelSmall: TextStyle(fontSize: 11.0, color: Colors.grey),
 ),
 ```
+
+### Readability
+
+- **Line height**: 1.4x–1.6x font size.
+- **Line length**: 45–75 characters for body text.
+- **Avoid ALL CAPS**: Except for short labels/badges.
+
+---
+
+## Layout Best Practices
+
+### Flexible Layouts
+
+- **Expanded**: Use to make a child fill remaining space along the main axis.
+- **Flexible**: Use when you want a widget to shrink to fit but not necessarily grow.
+- **Wrap**: Use when widgets would overflow and should move to the next line.
+
+### Performance Layouts
+
+- **SingleChildScrollView**: For content that's intrinsically larger than the viewport.
+- **ListView.builder**: For long lists (lazy-loaded).
+- **LayoutBuilder**: For responsive layouts based on available space.
+
+### Stack & Layering
+
+- **Positioned**: Precisely place children by anchoring to edges.
+- **Align**: Position children using alignments like `Alignment.center`.
+- **OverlayPortal**: For dropdowns or tooltips "on top" of everything.
 
 ---
 
@@ -136,13 +413,13 @@ BorderRadius.only(
 
 ```dart
 pageBuilder: (context, state, child) => CustomTransitionPage(
-  transitionDuration: Duration(milliseconds: 300),
+  transitionDuration: const Duration(milliseconds: 300),
   transitionsBuilder: (context, animation, _, child) {
     return FadeTransition(
       opacity: animation,
       child: SlideTransition(
         position: Tween<Offset>(
-          begin: Offset(0.03, 0),
+          begin: const Offset(0.03, 0),
           end: Offset.zero,
         ).animate(CurvedAnimation(
           parent: animation,
@@ -169,14 +446,14 @@ class _BarListItemState extends State<BarListItem>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 400),
       vsync: this,
     );
     _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeOut),
     );
     _slideAnimation = Tween<Offset>(
-      begin: Offset(0, 0.1),
+      begin: const Offset(0, 0.1),
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
@@ -263,7 +540,7 @@ BoxShadow(
 BoxShadow(
   color: Colors.black.withOpacity(0.4),
   blurRadius: 8,
-  offset: Offset(0, 4),
+  offset: const Offset(0, 4),
 )
 
 // Inner glow for active states
@@ -318,19 +595,71 @@ BoxDecoration(
 
 ---
 
-## Anti-Patterns to Avoid
+## Responsive Image Sizing
 
-| ❌ Don't                              | ✅ Do Instead                              |
-|---------------------------------------|--------------------------------------------|
-| Pure rectangular cards                | Large rounded corners (24px+)              |
-| White or light backgrounds            | Dark backgrounds (0xFF0D0D0D–0xFF1A1A1A)   |
-| System fonts (Roboto, San Francisco)  | Custom fonts (Playfair, DM Sans)           |
-| Hard drop shadows                     | Soft ambient glows                         |
-| Static layouts                        | Subtle animations on interactions          |
-| Over-animation / flashy effects       | Refined, purposeful micro-interactions     |
-| Pure black (#000000)                  | Near-black with warmth (0xFF0D0D0D)        |
-| Amber/Gold accent colors              | Red accent palette                         |
-| Small corner radii (8-12px)           | Large corner radii (24px+)                 |
+Circular images must scale based on screen width while preserving aspect ratio:
+
+```dart
+// List view: 56-72px diameter (28-36 radius)
+double getListRadius(BuildContext context) {
+  final width = MediaQuery.sizeOf(context).width;
+  return (width * 0.08).clamp(28.0, 36.0);
+}
+
+// Detail view: 100-140px diameter (50-70 radius)
+double getDetailRadius(BuildContext context) {
+  final width = MediaQuery.sizeOf(context).width;
+  return (width * 0.15).clamp(50.0, 70.0);
+}
+```
+
+---
+
+## Accessibility (A11Y)
+
+### Color Contrast
+
+- Ensure text meets WCAG AA standards (4.5:1 for normal, 3:1 for large text).
+
+### Dynamic Text Scaling
+
+- Test UI with increased system font size.
+
+### Semantic Labels
+
+- Use `Semantics` widget for clear, descriptive labels.
+
+### Screen Reader Testing
+
+- Test with TalkBack (Android) and VoiceOver (iOS).
+
+### Reduce-Motion Support
+
+Always respect system accessibility settings:
+
+```dart
+@override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+  final reduceMotion =
+      MediaQuery.accessibilityFeaturesOf(context).reduceMotion;
+  
+  if (reduceMotion) {
+    // Stop animations, show static state
+    _controller.stop();
+    _controller.value = 0.5; // Static mid-point
+  }
+}
+```
+
+**When reduce-motion is enabled:**
+- ❌ Disable pulsing glows, staggered list animations, scale feedback
+- ✅ Keep instant state changes for visual clarity
+- ✅ Maintain visual distinction for active states (borders, static glows)
+
+### Other A11Y Requirements
+
+- **Touch Targets**: Minimum 48x48 dp for interactive elements.
 
 ---
 
@@ -343,6 +672,7 @@ lib/
 │   ├── core/
 │   │   ├── theme/
 │   │   │   ├── app_colors.dart        # Color constants
+│   │   │   ├── app_typography.dart    # Typography definitions
 │   │   │   └── app_theme.dart         # Theme builder
 │   │   └── widgets/
 │   │       ├── animated_card.dart     # Reusable animated card
@@ -351,6 +681,22 @@ lib/
 │       ├── bar_list/                  # List screen components
 │       └── bar_detail/                # Detail screen components
 ```
+
+---
+
+## UI Anti-Patterns to Avoid
+
+| ❌ Don't                              | ✅ Do Instead                              |
+|---------------------------------------|--------------------------------------------|
+| Pure rectangular cards                | Large rounded corners (24px+)              |
+| White or light backgrounds            | Dark backgrounds (0xFF0D0D0D–0xFF1A1A1A)   |
+| System fonts (Roboto, San Francisco)  | Custom fonts (Playfair, Plus Jakarta Sans) |
+| Hard drop shadows                     | Soft ambient glows                         |
+| Static layouts                        | Subtle animations on interactions          |
+| Over-animation / flashy effects       | Refined, purposeful micro-interactions     |
+| Pure black (#000000)                  | Near-black with warmth (0xFF0D0D0D)        |
+| Amber/Gold accent colors              | Red accent palette                         |
+| Small corner radii (8-12px)           | Large corner radii (24px+)                 |
 
 ---
 
@@ -364,3 +710,12 @@ After any UI changes:
 4. ☐ Verify active happy hour states are immediately visible
 5. ☐ Test on different screen sizes (phone, tablet)
 6. ☐ Confirm no amber/gold colors remain
+7. ☐ Test with reduce-motion enabled (animations disabled)
+8. ☐ Verify const constructors used where possible
+9. ☐ Check that no expensive operations in build() methods
+
+---
+
+## Additional Context
+
+See `lib/presentation/design-skill.cursorrules` for creative design principles and avoiding generic aesthetics.

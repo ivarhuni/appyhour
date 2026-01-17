@@ -4,11 +4,13 @@ import 'package:happyhour_app/presentation/core/theme/app_colors.dart';
 
 abstract final class AppTypography {
   static TextStyle get displayFont => GoogleFonts.playfairDisplay();
-  static TextStyle get bodyFont => GoogleFonts.dmSans();
+  static TextStyle get bodyFont => GoogleFonts.plusJakartaSans();
   static TextStyle get monoFont => GoogleFonts.firaCode();
 
   static TextTheme get textTheme {
-    final baseTheme = GoogleFonts.dmSansTextTheme(ThemeData.dark().textTheme);
+    final baseTheme = GoogleFonts.plusJakartaSansTextTheme(
+      ThemeData.dark().textTheme,
+    );
     return baseTheme.copyWith(
       displayLarge: GoogleFonts.playfairDisplay(
         fontSize: 57,
@@ -41,36 +43,36 @@ abstract final class AppTypography {
         fontWeight: FontWeight.w600,
         color: AppColors.textPrimary,
       ),
-      titleLarge: GoogleFonts.dmSans(
+      titleLarge: GoogleFonts.plusJakartaSans(
         fontSize: 22,
         fontWeight: FontWeight.w600,
         color: AppColors.textPrimary,
       ),
-      titleMedium: GoogleFonts.dmSans(
+      titleMedium: GoogleFonts.plusJakartaSans(
         fontSize: 16,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.15,
         color: AppColors.textPrimary,
       ),
-      titleSmall: GoogleFonts.dmSans(
+      titleSmall: GoogleFonts.plusJakartaSans(
         fontSize: 14,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.1,
         color: AppColors.textPrimary,
       ),
-      bodyLarge: GoogleFonts.dmSans(
+      bodyLarge: GoogleFonts.plusJakartaSans(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.5,
         color: AppColors.textSecondary,
       ),
-      bodyMedium: GoogleFonts.dmSans(
+      bodyMedium: GoogleFonts.plusJakartaSans(
         fontSize: 14,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.25,
         color: AppColors.textSecondary,
       ),
-      bodySmall: GoogleFonts.dmSans(
+      bodySmall: GoogleFonts.plusJakartaSans(
         fontSize: 12,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.4,
@@ -112,12 +114,12 @@ abstract final class AppTypography {
     fontWeight: FontWeight.w500,
     color: AppColors.textSecondary,
   );
-  static TextStyle get chip => GoogleFonts.dmSans(
+  static TextStyle get chip => GoogleFonts.plusJakartaSans(
     fontSize: 12,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
   );
-  static TextStyle get badge => GoogleFonts.dmSans(
+  static TextStyle get badge => GoogleFonts.plusJakartaSans(
     fontSize: 11,
     fontWeight: FontWeight.w700,
     letterSpacing: 0.5,

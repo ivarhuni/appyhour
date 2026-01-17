@@ -19,6 +19,7 @@ class Bar extends Equatable {
   final String notes;
   final String? description;
   final double? rating;
+  final String? imageUrl;
 
   // Computed at runtime (not persisted)
   final double? distanceFromUser; // meters, null if location unavailable
@@ -38,6 +39,7 @@ class Bar extends Equatable {
     required this.notes,
     this.description,
     this.rating,
+    this.imageUrl,
     this.distanceFromUser,
   });
 
@@ -64,6 +66,7 @@ class Bar extends Equatable {
     String? notes,
     String? description,
     double? rating,
+    String? imageUrl,
     double? distanceFromUser,
   }) {
     return Bar(
@@ -81,6 +84,7 @@ class Bar extends Equatable {
       notes: notes ?? this.notes,
       description: description ?? this.description,
       rating: rating ?? this.rating,
+      imageUrl: imageUrl ?? this.imageUrl,
       distanceFromUser: distanceFromUser ?? this.distanceFromUser,
     );
   }
@@ -101,6 +105,7 @@ class Bar extends Equatable {
     notes,
     description,
     rating,
+    imageUrl,
     distanceFromUser,
   ];
 }

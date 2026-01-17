@@ -13,8 +13,6 @@ abstract final class AppPageTransitions {
     return CustomTransitionPage<T>(
       key: state.pageKey,
       child: child,
-      transitionDuration: duration,
-      reverseTransitionDuration: duration,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         return FadeTransition(
           opacity: CurvedAnimation(parent: animation, curve: curve),
@@ -38,8 +36,6 @@ abstract final class AppPageTransitions {
     return CustomTransitionPage<T>(
       key: state.pageKey,
       child: child,
-      transitionDuration: duration,
-      reverseTransitionDuration: duration,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         return FadeTransition(
           opacity: CurvedAnimation(parent: animation, curve: curve),
