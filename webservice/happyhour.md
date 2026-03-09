@@ -15,6 +15,8 @@ Non‑programmers update a single `bars.csv` in GitHub’s web UI. A GitHub Acti
 
 ---
 
+- This is me editing the happyhour markdown file 
+
 ## Inputs (edited by contributors)
 
 - **File:** `bars.csv` at repo root
